@@ -4605,6 +4605,14 @@
                 </div>
             </div>
         </div>
+        <div id="supertavern-settings-button" class="drawer">
+            <div class="drawer-toggle">
+                <div class="drawer-icon fa-solid fa-wand-magic-sparkles fa-fw closedIcon" title="SuperTavern Settings"></div>
+            </div>
+            <div id="supertavern-settings" class="drawer-content closedDrawer">
+                <div id="supertavern-settings-panel" class="flex-container flexFlowColumn wide100p flex1"></div>
+            </div>
+        </div>
         <div id="user-settings-button" class="drawer">
             <div class="drawer-toggle">
                 <div class="drawer-icon fa-solid fa-user-cog fa-fw closedIcon" title="User Settings" data-i18n="[title]User Settings"></div>
@@ -7759,14 +7767,44 @@
     <script type="module" src="scripts/i18n.js"></script>
     <script type="module" src="script.js"></script>
     <script>
-        window.addEventListener('load', (event) => {
+        const initializeSuperTavernLayout = () => {
             const documentHeight = () => {
                 const doc = document.documentElement;
                 doc.style.setProperty('--doc-height', `${window.innerHeight}px`);
-            }
+            };
+
             window.addEventListener('resize', documentHeight);
             documentHeight();
-        });
+
+            const supertavernTarget = document.getElementById('supertavern-settings-panel');
+            const uiThemeBlock = document.getElementById('UI-Theme-Block');
+            if (supertavernTarget && uiThemeBlock) {
+                supertavernTarget.appendChild(uiThemeBlock);
+            }
+
+            const deckSelectors = ['#command-deck', '.command-deck', '[data-command-deck]', '[data-supertavern-command-deck]'];
+            for (const selector of deckSelectors) {
+                document.querySelectorAll(selector).forEach((el) => el.remove());
+            }
+
+            document.querySelectorAll('#top-bar *').forEach((el) => {
+                const text = el.textContent?.trim().toUpperCase();
+                if (text && text.includes('COMMAND DECK')) {
+                    const deckRoot = el.closest('[data-command-deck], [data-supertavern-command-deck], .command-deck');
+                    if (deckRoot) {
+                        deckRoot.remove();
+                    } else {
+                        el.remove();
+                    }
+                }
+            });
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeSuperTavernLayout, { once: true });
+        } else {
+            initializeSuperTavernLayout();
+        }
     </script>
 </body>
 
