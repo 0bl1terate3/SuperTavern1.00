@@ -5209,6 +5209,68 @@ body:has(#character_popup.open) #top-settings-holder:has(.drawer-content.openDra
     width: 100%;
 }
 
+.supertavern-settings-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.supertavern-settings-group {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    padding: 14px 18px;
+    backdrop-filter: blur(4px);
+}
+
+.supertavern-settings-group h3 {
+    margin: 0 0 8px;
+    font-size: 1.05rem;
+}
+
+.supertavern-settings-group ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    display: grid;
+    gap: 6px;
+    list-style: disc;
+}
+
+.supertavern-settings-group ul ul {
+    margin-top: 6px;
+    list-style: circle;
+}
+
+.supertavern-settings-group li > strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+}
+
+#ui-settings-button .drawer-toggle,
+#supertavern-settings-button .drawer-toggle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+#ui-settings-button .drawer-icon,
+#supertavern-settings-button .drawer-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+#ui-settings-button .drawer-label,
+#supertavern-settings-button .drawer-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
 .drawer-icon {
     display: inline-block;
     cursor: pointer;

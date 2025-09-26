@@ -4605,60 +4605,14 @@
                 </div>
             </div>
         </div>
-        <div id="supertavern-settings-button" class="drawer">
+        <div id="ui-settings-button" class="drawer">
             <div class="drawer-toggle">
-                <div class="drawer-icon fa-solid fa-wand-magic-sparkles fa-fw closedIcon" title="SuperTavern Settings"></div>
-            </div>
-            <div id="supertavern-settings" class="drawer-content closedDrawer">
-                <div id="supertavern-settings-panel" class="flex-container flexFlowColumn wide100p flex1"></div>
-            </div>
-        </div>
-        <div id="user-settings-button" class="drawer">
-            <div class="drawer-toggle">
-                <div class="drawer-icon fa-solid fa-user-cog fa-fw closedIcon" title="User Settings" data-i18n="[title]User Settings"></div>
-            </div>
-            <div id="user-settings-block" class="drawer-content closedDrawer">
-                <div class="flex-container flexFlowColumn">
-                    <div name="userSettingsRowOne" class="flex-container flexFlowRow alignitemscenter spaceBetween">
-                        <div class="flex-container">
-                            <div class="flex-container flexnowrap alignItemsBaseline">
-                                <h3 class="margin0">
-                                    <span data-i18n="User Settings">User Settings</span>
-
-                                    <a href="https://docs.sillytavern.app/usage/user-settings/" class="notes-link" target="_blank">
-                                        <span class="fa-solid fa-circle-question note-link-span"></span>
-                                    </a>
-                                </h3>
-                            </div>
-                        </div>
-                        <div id="UI-language-block" class="flex-container alignItemsBaseline">
-                            <span data-i18n="UI Language">Language:</span>
-                            <select id="ui_language_select" class="flex1 margin0 text_pole">
-                                <option value="" data-i18n="Default">Default</option>
-                                <option value="en">English</option>
-                            </select>
-                        </div>
-                        <small id="version_display"></small>
-                    </div>
-                    <div name="UserSettingsRowTwo" class="flex-container flexFlowRow">
-                        <div id="account_controls" class="flex-container">
-                            <div id="account_button" class="margin0 menu_button_icon menu_button">
-                                <i class="fa-fw fa-solid fa-user-shield"></i>
-                                <span data-i18n="Account">Account</span>
-                            </div>
-                            <div id="admin_button" class="margin0 menu_button_icon menu_button">
-                                <i class="fa-fw fa-solid fa-user-tie"></i>
-                                <span data-i18n="Admin Panel">Admin Panel</span>
-                            </div>
-                            <div id="logout_button" class="margin0 menu_button_icon menu_button">
-                                <i class="fa-fw fa-solid fa-right-from-bracket"></i>
-                                <span data-i18n="Logout">Logout</span>
-                            </div>
-                        </div>
-                        <textarea id="settingsSearch" class="textarea_compact flex1" rows="1" placeholder="Search Settings" data-i18n="[placeholder]Search Settings"></textarea>
-                    </div>
+                <div class="drawer-icon fa-solid fa-palette fa-fw closedIcon" title="UI Settings" aria-label="UI Settings" data-i18n="[title]UI Settings">
+                    <span class="drawer-label" data-i18n="UI Settings">UI Settings</span>
                 </div>
-                <div id="user-settings-block-content" class="flex-container spaceEvenly">
+            </div>
+            <div id="ui-settings" class="drawer-content closedDrawer">
+                <div id="ui-settings-panel" class="flex-container flexFlowColumn wide100p flex1">
                     <div name="UserSettingsFirstColumn" id="UI-Theme-Block" class="flex-container flexFlowColumn wide100p flex1">
                         <div id="UI-presets-block" class="flex-container flexFlowColumn">
                             <h4 class="title_restorable">
@@ -4774,41 +4728,29 @@
 
                                 <div class="alignitemscenter flex-container flexFlowColumn flexBasis48p flexGrow flexShrink gap0">
                                     <small>
-                                        <span>
-                                            <span data-i18n="Chat Width">Chat Width</span>
-                                            <i class="fa-solid fa-desktop"></i>
-                                        </span>
-                                        <div class="fa-solid fa-circle-info opacity50p" data-i18n="[title]Width of the main chat window in % of screen width" title="Width of the main chat window in % of screen width"></div>
+                                        <span data-i18n="Chat Font Size">Chat Font Size</span>
+                                        <div class="fa-solid fa-circle-info opacity50p" data-i18n="[title]Changes the font size of chat messages." title="Changes the font size of chat messages."></div>
                                     </small>
-                                    <input class="neo-range-slider" type="range" id="chat_width_slider" name="chat_width_slider" min="25" max="100" step="1">
-                                    <input class="neo-range-input" type="number" min="25" max="100" step="1" data-for="chat_width_slider" id="chat_width_slider_counter">
+                                    <input class="neo-range-slider" type="range" id="font_size" name="font_size" min="70" max="170" step="5">
+                                    <input class="neo-range-input" type="number" min="70" max="170" step="5" data-for="font_size" id="font_size_counter">
                                 </div>
 
                                 <div class="alignitemscenter flex-container flexFlowColumn flexBasis48p flexGrow flexShrink gap0">
                                     <small>
-                                        <span data-i18n="Font Scale">Font Scale</span>
-                                        <div class="fa-solid fa-circle-info opacity50p" data-i18n="[title]Font size" title="Font size"></div>
+                                        <span data-i18n="Chat Width">Chat Width</span>
+                                        <div class="fa-solid fa-circle-info opacity50p" data-i18n="[title]Changes the width of the chat area." title="Changes the width of the chat area."></div>
                                     </small>
-                                    <input class="neo-range-slider" type="range" id="font_scale" name="font_scale" min="0.5" max="1.5" step="0.01">
-                                    <input class="neo-range-input" type="number" min="0.5" max="1.5" step="0.01" data-for="font_scale" id="font_scale_counter">
+                                    <input class="neo-range-slider" type="range" id="chat_display_mode" name="chat_display_mode" min="0" max="2" step="1">
+                                    <input class="neo-range-input" type="number" min="0" max="2" step="1" data-for="chat_display_mode" id="chat_display_mode_counter">
                                 </div>
 
                                 <div class="alignitemscenter flex-container flexFlowColumn flexBasis48p flexGrow flexShrink gap0">
                                     <small>
-                                        <span data-i18n="Blur Strength">Blur Strength</span>
-                                        <div class="fa-solid fa-circle-info opacity50p" data-i18n="[title]Blur strength on UI panels." title="Blur strength on UI panels."></div>
+                                        <span data-i18n="Chat Blur">Chat Blur</span>
+                                        <div class="fa-solid fa-circle-info opacity50p" data-i18n="[title]Changes the blur intensity behind chat windows." title="Changes the blur intensity behind chat windows."></div>
                                     </small>
-                                    <input class="neo-range-slider" type="range" id="blur_strength" name="blur_strength" min="0" max="30" step="1">
-                                    <input class="neo-range-input" type="number" min="0" max="30" step="1" data-for="blur_strength" id="blur_strength_counter">
-                                </div>
-
-                                <div class="alignitemscenter flex-container flexFlowColumn flexBasis48p flexGrow flexShrink gap0">
-                                    <small>
-                                        <span data-i18n="Text Shadow Width">Shadow Width</span>
-                                        <div class="fa-solid fa-circle-info opacity50p" data-i18n="[title]Strength of the text shadows" title="Strength of the text shadows"></div>
-                                    </small>
-                                    <input class="neo-range-slider" type="range" id="shadow_width" name="shadow_width" min="0" max="5" step="1">
-                                    <input class="neo-range-input" type="number" min="0" max="5" step="1" data-for="shadow_width" id="shadow_width_counter">
+                                    <input class="neo-range-slider" type="range" id="blur_intensity" name="blur_intensity" min="0" max="12" step="1">
+                                    <input class="neo-range-input" type="number" min="0" max="12" step="1" data-for="blur_intensity" id="blur_intensity_counter">
                                 </div>
                             </div>
                             <hr>
@@ -4896,6 +4838,460 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div id="supertavern-settings-button" class="drawer">
+            <div class="drawer-toggle">
+                <div class="drawer-icon fa-solid fa-wand-magic-sparkles fa-fw closedIcon" title="SuperTavern Settings" aria-label="SuperTavern Settings" data-i18n="[title]SuperTavern Settings">
+                    <span class="drawer-label" data-i18n="SuperTavern Settings">SuperTavern Settings</span>
+                </div>
+            </div>
+            <div id="supertavern-settings" class="drawer-content closedDrawer">
+                <div id="supertavern-settings-panel" class="supertavern-settings-panel flex-container flexFlowColumn wide100p flex1">
+                    <div class="supertavern-settings-group">
+                        <h3>Real-Time Multi-User Chat Rooms</h3>
+                        <ul>
+                            <li>Allow multiple human users to join the same conversation simultaneously</li>
+                            <li>Real-time synchronization with conflict resolution for simultaneous messages</li>
+                            <li>User roles and permissions (moderator, participant, observer)</li>
+                            <li>Private side conversations within group chats</li>
+                            <li>Cross-talk functionality (user-to-user communication using "/" prefix)</li>
+                        </ul>
+                    </div>
+                    <div class="supertavern-settings-group">
+                        <h3>Shared Memory Systems</h3>
+                        <ul>
+                            <li>Persistent shared knowledge base across multiple users</li>
+                            <li>Project-specific shared memory that updates in real-time</li>
+                            <li>Privacy controls for what gets shared vs. kept private</li>
+                            <li>Collaborative world-building with version control</li>
+                        </ul>
+                    </div>
+                    <div class="supertavern-settings-group">
+                        <h3>Team Workspaces</h3>
+                        <ul>
+                            <li>Role-based access control for different team functions</li>
+                            <li>Shared character libraries and prompt templates</li>
+                            <li>Team analytics and usage tracking</li>
+                            <li>Centralized billing and subscription management</li>
+                        </ul>
+                    </div>
+                    <div class="supertavern-settings-group">
+                        <h3>Gamification &amp; Achievement Systems</h3>
+                        <ul>
+                            <li>
+                                <strong>Experience Point System</strong>
+                                <ul>
+                                    <li>Earn XP for various activities (daily chat, trying new features, creative writing)</li>
+                                    <li>Level progression unlocks new customization options</li>
+                                    <li>Achievement badges for milestones (1000 messages, first group chat, etc.)</li>
+                                    <li>Seasonal challenges and events</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Interactive Storytelling Modes</strong>
+                                <ul>
+                                    <li>Choose-your-own-adventure style conversations</li>
+                                    <li>Branching narrative trees with save points</li>
+                                    <li>Story collaboration between multiple users</li>
+                                    <li>Interactive fiction creation tools</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Mini-Games Integration</strong>
+                                <ul>
+                                    <li>Built-in games like chess, dice rolling, trivia</li>
+                                    <li>AI-powered puzzle generation</li>
+                                    <li>Collaborative problem-solving challenges</li>
+                                    <li>RPG-style character stat systems</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="supertavern-settings-group">
+                        <h3>Enhanced Accessibility Features</h3>
+                        <ul>
+                            <li>
+                                <strong>Advanced Screen Reader Support</strong>
+                                <ul>
+                                    <li>Optimized ARIA labels and live regions</li>
+                                    <li>Customizable announcement preferences</li>
+                                    <li>Keyboard navigation shortcuts</li>
+                                    <li>High contrast and dyslexia-friendly themes</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Multi-Modal Accessibility</strong>
+                                <ul>
+                                    <li>Voice-first interaction modes</li>
+                                    <li>Gesture-based navigation for mobile</li>
+                                    <li>Customizable font sizes and spacing</li>
+                                    <li>Color-blind friendly interface options</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Neurodivergent-Friendly Features</strong>
+                                <ul>
+                                    <li>Reduced motion options</li>
+                                    <li>Focus management tools</li>
+                                    <li>Cognitive load reduction settings</li>
+                                    <li>Sensory-friendly color schemes</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="supertavern-settings-group">
+                        <h3>Advanced AI Integration</h3>
+                        <ul>
+                            <li>
+                                <strong>Multi-Model Ensemble Conversations</strong>
+                                <ul>
+                                    <li>Run multiple AI models simultaneously for consensus responses</li>
+                                    <li>Model voting systems for better accuracy</li>
+                                    <li>Specialized model routing based on query type</li>
+                                    <li>Cross-model knowledge verification</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Dynamic Model Switching</strong>
+                                <ul>
+                                    <li>Automatic model selection based on conversation context</li>
+                                    <li>Performance monitoring and adaptive switching</li>
+                                    <li>Cost optimization algorithms</li>
+                                    <li>Fallback model chains</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>AI Agent Orchestration</strong>
+                                <ul>
+                                    <li>Multiple specialized AI agents working together</li>
+                                    <li>Agent-to-agent communication within conversations</li>
+                                    <li>Task delegation between different AI capabilities</li>
+                                    <li>Workflow automation with AI agents</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="supertavern-settings-group">
+                        <h3>Creative &amp; Content Generation Tools</h3>
+                        <ul>
+                            <li>
+                                <strong>Collaborative Writing Suite</strong>
+                                <ul>
+                                    <li>Real-time collaborative document editing within chat</li>
+                                    <li>Version history and branching for creative projects</li>
+                                    <li>AI-assisted story planning and character development</li>
+                                    <li>Export to various formats (PDF, EPUB, etc.)</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Advanced Image Generation Integration</strong>
+                                <ul>
+                                    <li>Context-aware image generation from conversation</li>
+                                    <li>Character consistency across generated images</li>
+                                    <li>Style transfer and image editing tools</li>
+                                    <li>3D avatar generation and customization</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Multimedia Content Creation</strong>
+                                <ul>
+                                    <li>AI-powered voice cloning for characters</li>
+                                    <li>Background music generation based on mood</li>
+                                    <li>Sound effect libraries for immersive experiences</li>
+                                    <li>Video generation for character interactions</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="supertavern-settings-group">
+                        <h3>Advanced Memory &amp; Context Management</h3>
+                        <ul>
+                            <li>
+                                <strong>Semantic Memory Clustering</strong>
+                                <ul>
+                                    <li>Intelligent grouping of related memories</li>
+                                    <li>Context-aware memory retrieval</li>
+                                    <li>Memory importance scoring and pruning</li>
+                                    <li>Cross-character memory sharing</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Dynamic Context Windows</strong>
+                                <ul>
+                                    <li>Adaptive context size based on conversation importance</li>
+                                    <li>Smart token allocation for optimal performance</li>
+                                    <li>Context compression algorithms</li>
+                                    <li>Multi-layered memory hierarchies</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Persistent World States</strong>
+                                <ul>
+                                    <li>Maintain consistent world information across sessions</li>
+                                    <li>Time progression and event tracking</li>
+                                    <li>Character relationship dynamics</li>
+                                    <li>Environmental state persistence</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="supertavern-settings-group">
+                        <h3>Enhanced Customization &amp; Theming</h3>
+                        <ul>
+                            <li>
+                                <strong>Advanced Theme Engine</strong>
+                                <ul>
+                                    <li>Node-based theme editor</li>
+                                    <li>Dynamic themes that change based on conversation mood</li>
+                                    <li>Community theme marketplace</li>
+                                    <li>Import/export theme packages</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Procedural UI Generation</strong>
+                                <ul>
+                                    <li>AI-generated interface layouts</li>
+                                    <li>Adaptive UI based on usage patterns</li>
+                                    <li>Personalized dashboard creation</li>
+                                    <li>Context-sensitive control panels</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Advanced Character Customization</strong>
+                                <ul>
+                                    <li>3D character model integration</li>
+                                    <li>Facial expression animation</li>
+                                    <li>Voice synthesis training</li>
+                                    <li>Personality trait sliders with behavioral impact</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="supertavern-settings-group">
+                        <h3>Analytics &amp; Insights</h3>
+                        <ul>
+                            <li>
+                                <strong>Conversation Analytics Dashboard</strong>
+                                <ul>
+                                    <li>Word count and sentiment tracking</li>
+                                    <li>Character development progress</li>
+                                    <li>Relationship mapping between characters</li>
+                                    <li>Usage pattern analysis</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>AI Performance Metrics</strong>
+                                <ul>
+                                    <li>Response quality tracking</li>
+                                    <li>Model comparison analytics</li>
+                                    <li>Cost optimization insights</li>
+                                    <li>Performance benchmarking</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Personal Growth Tracking</strong>
+                                <ul>
+                                    <li>Writing skill progression</li>
+                                    <li>Creative milestone achievements</li>
+                                    <li>Learning progress in different topics</li>
+                                    <li>Social interaction improvements</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="supertavern-settings-group">
+                        <h3>Integration &amp; Automation</h3>
+                        <ul>
+                            <li>
+                                <strong>External Service Integration</strong>
+                                <ul>
+                                    <li>Calendar and scheduling connectivity</li>
+                                    <li>Note-taking app synchronization</li>
+                                    <li>Social media cross-posting</li>
+                                    <li>Email integration for conversation summaries</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Workflow Automation</strong>
+                                <ul>
+                                    <li>Custom STscript marketplace</li>
+                                    <li>Visual workflow builder</li>
+                                    <li>Trigger-based automation</li>
+                                    <li>Integration with productivity tools</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>API Ecosystem</strong>
+                                <ul>
+                                    <li>RESTful API for third-party integrations</li>
+                                    <li>Webhook support for external events</li>
+                                    <li>Plugin architecture for community extensions</li>
+                                    <li>GraphQL interface for advanced queries</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="supertavern-settings-group">
+                        <h3>Advanced Search &amp; Organization</h3>
+                        <ul>
+                            <li>
+                                <strong>Semantic Search Across All Conversations</strong>
+                                <ul>
+                                    <li>Natural language query for finding specific conversations</li>
+                                    <li>Cross-character search capabilities</li>
+                                    <li>Context-aware result ranking</li>
+                                    <li>Advanced filtering and sorting options</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Smart Organization Systems</strong>
+                                <ul>
+                                    <li>AI-powered conversation categorization</li>
+                                    <li>Automatic tagging based on content</li>
+                                    <li>Relationship mapping between characters and topics</li>
+                                    <li>Timeline view of conversation history</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Knowledge Graph Integration</strong>
+                                <ul>
+                                    <li>Visual representation of character relationships</li>
+                                    <li>Topic connection mapping</li>
+                                    <li>Interactive exploration of conversation networks</li>
+                                    <li>Export to graph analysis tools</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="supertavern-settings-group">
+                        <h3>Privacy &amp; Security Enhancements</h3>
+                        <ul>
+                            <li>
+                                <strong>Advanced Encryption</strong>
+                                <ul>
+                                    <li>End-to-end encryption for sensitive conversations</li>
+                                    <li>Local-only processing options</li>
+                                    <li>Selective cloud sync with encryption</li>
+                                    <li>Zero-knowledge architecture options</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Privacy Controls</strong>
+                                <ul>
+                                    <li>Granular data sharing permissions</li>
+                                    <li>Automatic PII detection and masking</li>
+                                    <li>Conversation anonymization tools</li>
+                                    <li>Data retention policy customization</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="supertavern-settings-group">
+                        <h3>Mobile &amp; Cross-Platform</h3>
+                        <ul>
+                            <li>
+                                <strong>Progressive Web App Enhancement</strong>
+                                <ul>
+                                    <li>Offline conversation capabilities</li>
+                                    <li>Push notification system</li>
+                                    <li>Mobile-optimized gesture controls</li>
+                                    <li>Responsive design improvements</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Cross-Device Synchronization</strong>
+                                <ul>
+                                    <li>Real-time sync across multiple devices</li>
+                                    <li>Device-specific customization preservation</li>
+                                    <li>Bandwidth optimization for mobile</li>
+                                    <li>Conflict resolution for simultaneous edits</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="supertavern-settings-group">
+                        <h3>Community &amp; Social Features</h3>
+                        <ul>
+                            <li>
+                                <strong>Character Sharing Marketplace</strong>
+                                <ul>
+                                    <li>Community-driven character library</li>
+                                    <li>Rating and review system for characters</li>
+                                    <li>Version control for shared characters</li>
+                                    <li>Monetization options for character creators</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Collaborative World Building</strong>
+                                <ul>
+                                    <li>Shared universe creation tools</li>
+                                    <li>Community-driven lore development</li>
+                                    <li>Voting systems for canonical events</li>
+                                    <li>Collaborative timeline management</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Social Discovery</strong>
+                                <ul>
+                                    <li>Find users with similar interests</li>
+                                    <li>Public conversation showcases</li>
+                                    <li>Community challenges and events</li>
+                                    <li>Mentorship matching system</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="user-settings-button" class="drawer">
+            <div class="drawer-toggle">
+                <div class="drawer-icon fa-solid fa-user-cog fa-fw closedIcon" title="User Settings" data-i18n="[title]User Settings"></div>
+            </div>
+            <div id="user-settings-block" class="drawer-content closedDrawer">
+                <div class="flex-container flexFlowColumn">
+                    <div name="userSettingsRowOne" class="flex-container flexFlowRow alignitemscenter spaceBetween">
+                        <div class="flex-container">
+                            <div class="flex-container flexnowrap alignItemsBaseline">
+                                <h3 class="margin0">
+                                    <span data-i18n="User Settings">User Settings</span>
+
+                                    <a href="https://docs.sillytavern.app/usage/user-settings/" class="notes-link" target="_blank">
+                                        <span class="fa-solid fa-circle-question note-link-span"></span>
+                                    </a>
+                                </h3>
+                            </div>
+                        </div>
+                        <div id="UI-language-block" class="flex-container alignItemsBaseline">
+                            <span data-i18n="UI Language">Language:</span>
+                            <select id="ui_language_select" class="flex1 margin0 text_pole">
+                                <option value="" data-i18n="Default">Default</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                        <small id="version_display"></small>
+                    </div>
+                    <div name="UserSettingsRowTwo" class="flex-container flexFlowRow">
+                        <div id="account_controls" class="flex-container">
+                            <div id="account_button" class="margin0 menu_button_icon menu_button">
+                                <i class="fa-fw fa-solid fa-user-shield"></i>
+                                <span data-i18n="Account">Account</span>
+                            </div>
+                            <div id="admin_button" class="margin0 menu_button_icon menu_button">
+                                <i class="fa-fw fa-solid fa-user-tie"></i>
+                                <span data-i18n="Admin Panel">Admin Panel</span>
+                            </div>
+                            <div id="logout_button" class="margin0 menu_button_icon menu_button">
+                                <i class="fa-fw fa-solid fa-right-from-bracket"></i>
+                                <span data-i18n="Logout">Logout</span>
+                            </div>
+                        </div>
+                        <textarea id="settingsSearch" class="textarea_compact flex1" rows="1" placeholder="Search Settings" data-i18n="[placeholder]Search Settings"></textarea>
+                    </div>
+                </div>
+                <div id="user-settings-block-content" class="flex-container spaceEvenly">
                     <div name="UserSettingsSecondColumn" id="UI-Customization" class="flex-container flexFlowColumn wide100p flexNoGap flex1">
                         <div name="CharacterHandlingToggles">
                             <h4 data-i18n="Character Handling">
@@ -7775,12 +8171,6 @@
 
             window.addEventListener('resize', documentHeight);
             documentHeight();
-
-            const supertavernTarget = document.getElementById('supertavern-settings-panel');
-            const uiThemeBlock = document.getElementById('UI-Theme-Block');
-            if (supertavernTarget && uiThemeBlock) {
-                supertavernTarget.appendChild(uiThemeBlock);
-            }
 
             const deckSelectors = ['#command-deck', '.command-deck', '[data-command-deck]', '[data-supertavern-command-deck]'];
             for (const selector of deckSelectors) {
