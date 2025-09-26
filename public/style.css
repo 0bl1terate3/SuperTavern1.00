@@ -6135,6 +6135,7 @@ body:not(.movingUI) .drawer-content.maximized {
     padding: 4px 10px;
     background: rgba(0, 0, 0, 0.4);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-wrap: wrap;
 }
 
 .supertavern-brand {
@@ -6168,6 +6169,22 @@ body:not(.movingUI) .drawer-content.maximized {
 .supertavern-focus-state {
     font-size: 0.8rem;
     color: #ccc;
+}
+
+body.supertavern-top-bar-visible {
+    --supertavernTopBarGap: max(12px, calc(var(--mainFontSize) * 0.75));
+}
+
+body.supertavern-top-bar-visible #top-settings-holder {
+    margin-top: calc(var(--topBarBlockSize) + var(--supertavernTopBarGap));
+}
+
+body.supertavern-top-bar-visible #sheld {
+    top: calc(var(--topBarBlockSize) + var(--supertavernTopBarGap));
+    height: calc(100vh - (var(--topBarBlockSize) + var(--supertavernTopBarGap)) - 1px);
+    height: calc(100dvh - (var(--topBarBlockSize) + var(--supertavernTopBarGap)) - 1px);
+    max-height: calc(100vh - (var(--topBarBlockSize) + var(--supertavernTopBarGap)) - 1px);
+    max-height: calc(100dvh - (var(--topBarBlockSize) + var(--supertavernTopBarGap)) - 1px);
 }
 
 body.supertavern-focus-mode #bg_custom,

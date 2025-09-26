@@ -38,6 +38,16 @@ function initTopBarFeatures() {
     container.append(brand, timer, focusToggle, focusState);
     topBar.appendChild(container);
 
+    const updateTopBarSpacing = () => {
+        const isHidden = topBar.style.display === 'none' || topBar.classList.contains('displayNone');
+        document.body.classList.toggle('supertavern-top-bar-visible', !isHidden);
+    };
+
+    updateTopBarSpacing();
+
+    const visibilityObserver = new MutationObserver(updateTopBarSpacing);
+    visibilityObserver.observe(topBar, { attributes: true, attributeFilter: ['style', 'class'] });
+
     const start = Date.now();
     const updateTimer = () => {
         const elapsed = Math.floor((Date.now() - start) / 1000);
