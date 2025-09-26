@@ -625,7 +625,7 @@ class ChatterboxTtsProvider {
 
             this.updateStatus('Ready');
 
-            // Return the response directly - SillyTavern expects a Response object
+            // Return the response directly - SuperTavern expects a Response object
             return response;
 
         } catch (error) {

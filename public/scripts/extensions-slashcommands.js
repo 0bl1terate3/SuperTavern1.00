@@ -302,7 +302,7 @@ export function registerExtensionSlashCommands() {
                 <strong>Example:</strong>
                 <ul>
                     <li>
-                        <pre><code class="language-stscript">/extension-exists SillyTavern-LALib</code></pre>
+                        <pre><code class="language-stscript">/extension-exists SuperTavern-LALib</code></pre>
                     </li>
                 </ul>
             </div>

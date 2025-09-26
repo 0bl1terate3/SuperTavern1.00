@@ -4,7 +4,7 @@ describe('sample', () => {
         await page.waitForFunction('document.getElementById("preloader") === null', { timeout: 0 });
     });
 
-    it('should be titled "SillyTavern"', async () => {
-        await expect(page.title()).resolves.toMatch('SillyTavern');
+    it('should be titled "SuperTavern"', async () => {
+        await expect(page.title()).resolves.toMatch('SuperTavern');
     });
 });

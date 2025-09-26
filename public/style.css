@@ -356,7 +356,7 @@ input[type='checkbox']:focus-visible {
     opacity: 0.7;
 }
 
-.mes[is_system="true"][ch_name="SillyTavern System"] .mes_text br {
+.mes[is_system="true"][ch_name="SuperTavern System"] .mes_text br {
     display: none;
 }
 
@@ -6125,4 +6125,157 @@ body:not(.movingUI) .drawer-content.maximized {
 .info-block.error {
     border-color: var(--error-color, #e87f7f);
     background-color: rgba(241, 163, 163, 0.2);
+}
+/* SuperTavern UI enhancements */
+.supertavern-top-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.supertavern-brand {
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.supertavern-session-timer {
+    flex: 1;
+    text-align: center;
+    font-family: 'Noto Sans Mono', monospace;
+    font-size: 0.9rem;
+}
+
+.supertavern-focus-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.supertavern-focus-toggle span {
+    font-size: 0.85rem;
+}
+
+.supertavern-focus-toggle.active {
+    background: rgba(0, 150, 136, 0.4);
+}
+
+.supertavern-focus-state {
+    font-size: 0.8rem;
+    color: #ccc;
+}
+
+body.supertavern-focus-mode #bg_custom,
+body.supertavern-focus-mode #bg1 {
+    display: none;
+}
+
+body.supertavern-focus-mode .supertavern-focus-state {
+    color: #6ee7b7;
+}
+
+.supertavern-notes-block {
+    padding: 12px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.35);
+    margin-bottom: 12px;
+}
+
+.supertavern-notes-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+}
+
+.supertavern-notes-description {
+    font-size: 0.85rem;
+    color: #ccc;
+    margin: 6px 0;
+}
+
+.supertavern-notes-textarea {
+    width: 100%;
+    margin-top: 8px;
+    min-height: 80px;
+    resize: vertical;
+}
+
+.supertavern-notes-presets {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.supertavern-notes-presets .menu_button {
+    font-size: 0.75rem;
+}
+
+.supertavern-notes-counter {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.75rem;
+    color: #bbb;
+}
+
+.supertavern-notes-clear {
+    margin-top: 8px;
+    width: fit-content;
+}
+
+.supertavern-character-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.supertavern-filter-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+.supertavern-filter-input {
+    width: 100%;
+    padding: 6px 8px;
+}
+
+.supertavern-filter-counter {
+    font-size: 0.75rem;
+    color: #bbb;
+}
+
+.supertavern-filter-empty {
+    font-size: 0.85rem;
+    color: #f87171;
+}
+
+.supertavern-draft-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 8px;
+}
+
+.supertavern-draft-controls.has-draft {
+    border-left: 2px solid #34d399;
+    padding-left: 6px;
+}
+
+.supertavern-draft-controls .menu_button {
+    font-size: 0.75rem;
+    padding: 4px 6px;
 }

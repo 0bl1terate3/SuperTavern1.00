@@ -152,7 +152,7 @@ const TOKENIZER_URLS = {
     },
 };
 
-const objectStore = localforage.createInstance({ name: 'SillyTavern_ChatCompletions' });
+const objectStore = localforage.createInstance({ name: 'SuperTavern_ChatCompletions' });
 
 let tokenCache = {};
 
