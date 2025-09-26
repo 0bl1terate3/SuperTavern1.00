@@ -17,6 +17,7 @@ import {
     renderPaginationDropdown,
     paginationDropdownChangeHandler,
     waitUntilCondition,
+    timestampToMoment,
 } from './utils.js';
 import { RA_CountCharTokens, humanizedDateTime, dragElement, favsToHotswap, getMessageTimeStamp } from './RossAscends-mods.js';
 import { power_user, loadMovingUIState, sortEntitiesList } from './power-user.js';
@@ -44,6 +45,7 @@ import {
     system_message_types,
     online_status,
     talkativeness_default,
+    group_reply_mention_window_default,
     selectRightMenuWithAnimation,
     deleteLastMessage,
     showSwipeButtons,
@@ -129,6 +131,9 @@ export const group_generation_mode = {
 };
 
 export const DEFAULT_AUTO_MODE_DELAY = 5;
+export const DEFAULT_SILENCE_FALLBACK_SECONDS = 45;
+
+const MAX_MENTION_WINDOW = 25;
 
 const NARRATOR_NAME_KEY = 'narrator_name';
 const NARRATOR_NAME_DEFAULT = 'System';
@@ -971,7 +976,7 @@ async function generateGroupWrapper(by_auto_mode, type = null, params = {}) {
             activatedMembers = activateImpersonate(group.members);
         }
         else if (activationStrategy === group_activation_strategy.NATURAL) {
-            activatedMembers = activateNaturalOrder(enabledMembers, activationText, lastMessage, group.allow_self_responses, isUserInput);
+            activatedMembers = activateNaturalOrder(enabledMembers, activationText, lastMessage, group.allow_self_responses, isUserInput, group);
         }
         else if (activationStrategy === group_activation_strategy.LIST) {
             activatedMembers = activateListOrder(enabledMembers);
@@ -1178,7 +1183,170 @@ function activatePooledOrder(members, lastMessage, isUserInput) {
     return memberId !== -1 ? [memberId] : [];
 }
 
-function activateNaturalOrder(members, input, lastMessage, allowSelfResponses, isUserInput) {
+function clampMentionWindow(value) {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) {
+        return group_reply_mention_window_default;
+    }
+    return Math.min(MAX_MENTION_WINDOW, Math.max(0, Math.round(numeric)));
+}
+
+function normalizeAliasList(input) {
+    if (Array.isArray(input)) {
+        return input.map(x => String(x ?? '').trim()).filter(x => x);
+    }
+    if (typeof input === 'string') {
+        return input
+            .split(/[\n,]/g)
+            .map(x => x.trim())
+            .filter(x => x);
+    }
+    return [];
+}
+
+function getGroupReplySettings(character) {
+    const groupChat = character?.group_chat ?? {};
+    return {
+        replyOnlyOnMention: !!groupChat.reply_only_on_mention,
+        mentionWindow: clampMentionWindow(groupChat.mention_window),
+        aliases: normalizeAliasList(groupChat.mention_aliases),
+    };
+}
+
+function buildMentionHistoryEntries(input, maxWindow) {
+    const entries = [];
+
+    const addEntry = (text, distance) => {
+        if (!text) {
+            return;
+        }
+        entries.push({
+            distance,
+            textLower: String(text).toLowerCase(),
+            words: extractAllWords(text),
+        });
+    };
+
+    if (input && input.length) {
+        addEntry(input, 0);
+    }
+
+    if (maxWindow <= 0) {
+        return entries;
+    }
+
+    let distance = input && input.length ? 1 : 0;
+    for (let i = chat.length - 1; i >= 0 && distance <= maxWindow; i--) {
+        const message = chat[i];
+        if (!message?.mes) {
+            continue;
+        }
+        addEntry(message.mes, distance);
+        distance++;
+    }
+
+    return entries;
+}
+
+function doesEntryMentionCharacter(entry, character, aliases) {
+    const aliasCandidates = [character?.name, ...(aliases ?? [])];
+
+    for (const alias of aliasCandidates) {
+        const normalizedAlias = String(alias ?? '').trim().toLowerCase();
+        if (!normalizedAlias) {
+            continue;
+        }
+
+        if (/^\w+$/.test(normalizedAlias)) {
+            if (entry.words.includes(normalizedAlias)) {
+                return true;
+            }
+        } else if (entry.textLower.includes(normalizedAlias)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function detectMentionedMembers(members, historyEntries, mentionSettings, bannedUser) {
+    const mentioned = new Set();
+
+    for (const entry of historyEntries) {
+        for (const member of members) {
+            if (mentioned.has(member)) {
+                continue;
+            }
+            const settings = mentionSettings.get(member);
+            if (!settings) {
+                continue;
+            }
+            if (entry.distance > settings.mentionWindow) {
+                continue;
+            }
+            const character = characters.find(x => x.avatar === member);
+            if (!character || character.name === bannedUser) {
+                continue;
+            }
+            if (doesEntryMentionCharacter(entry, character, settings.aliases)) {
+                mentioned.add(member);
+            }
+        }
+    }
+
+    return mentioned;
+}
+
+function getMessageTimestampMs(message) {
+    const rawTimestamp = message?.extra?.timestamp ?? message?.send_date;
+    if (typeof rawTimestamp === 'number') {
+        return Number.isFinite(rawTimestamp) ? rawTimestamp : null;
+    }
+    if (typeof rawTimestamp === 'string') {
+        const parsedMoment = timestampToMoment(rawTimestamp);
+        if (parsedMoment?.isValid?.()) {
+            return parsedMoment.valueOf();
+        }
+        const parsedNumber = Date.parse(rawTimestamp);
+        if (Number.isFinite(parsedNumber)) {
+            return parsedNumber;
+        }
+    }
+    return null;
+}
+
+function getLastAssistantMessageTimestamp() {
+    for (let i = chat.length - 1; i >= 0; i--) {
+        const message = chat[i];
+        if (!message || message.is_user || message.is_system) {
+            continue;
+        }
+        const timestamp = getMessageTimestampMs(message);
+        if (timestamp !== null) {
+            return timestamp;
+        }
+    }
+    return null;
+}
+
+function shouldAllowSilenceFallbackForGroup(group, mentionedMembers) {
+    const thresholdSeconds = Math.max(0, Number(group?.silence_fallback_seconds ?? DEFAULT_SILENCE_FALLBACK_SECONDS));
+    if (!thresholdSeconds) {
+        return false;
+    }
+    if (mentionedMembers?.size) {
+        return false;
+    }
+
+    const lastAssistantTimestamp = getLastAssistantMessageTimestamp();
+    if (lastAssistantTimestamp === null) {
+        return false;
+    }
+
+    return Date.now() - lastAssistantTimestamp >= thresholdSeconds * 1000;
+}
+
+function activateNaturalOrder(members, input, lastMessage, allowSelfResponses, isUserInput, group) {
     let activatedMembers = [];
 
     // prevents the same character from speaking twice
@@ -1189,31 +1357,41 @@ function activateNaturalOrder(members, input, lastMessage, allowSelfResponses, i
         bannedUser = undefined;
     }
 
-    // find mentions (excluding self)
-    if (input && input.length) {
-        for (let inputWord of extractAllWords(input)) {
-            for (let member of members) {
-                const character = characters.find(x => x.avatar === member);
+    const mentionSettings = new Map();
+    const eligibleMembers = [];
+    let maxMentionWindow = 0;
 
-                if (!character || character.name === bannedUser) {
-                    continue;
-                }
-
-                if (extractAllWords(character.name).includes(inputWord)) {
-                    activatedMembers.push(member);
-                    break;
-                }
-            }
+    for (const member of members) {
+        const character = characters.find(x => x.avatar === member);
+        if (!character || character.name === bannedUser) {
+            continue;
         }
+        const settings = getGroupReplySettings(character);
+        mentionSettings.set(member, settings);
+        maxMentionWindow = Math.max(maxMentionWindow, settings.mentionWindow);
+        eligibleMembers.push(member);
     }
 
-    const chattyMembers = [];
-    // activation by talkativeness (in shuffled order, except banned)
-    const shuffledMembers = shuffle([...members]);
-    for (let member of shuffledMembers) {
-        const character = characters.find((x) => x.avatar === member);
+    const historyEntries = buildMentionHistoryEntries(input, maxMentionWindow);
+    const mentionedMembers = detectMentionedMembers(eligibleMembers, historyEntries, mentionSettings, bannedUser);
 
-        if (!character || character.name === bannedUser) {
+    activatedMembers.push(...mentionedMembers);
+
+    const fallbackActive = shouldAllowSilenceFallbackForGroup(group, mentionedMembers);
+    const chattyMembers = [];
+    const shuffledMembers = shuffle([...eligibleMembers]);
+    for (const member of shuffledMembers) {
+        const character = characters.find(x => x.avatar === member);
+        if (!character) {
+            continue;
+        }
+
+        const settings = mentionSettings.get(member) ?? getGroupReplySettings(character);
+        const requiresMention = settings.replyOnlyOnMention;
+        const wasMentioned = mentionedMembers.has(member);
+        const allowByMention = !requiresMention || wasMentioned || fallbackActive;
+
+        if (!allowByMention) {
             continue;
         }
 
@@ -1231,17 +1409,28 @@ function activateNaturalOrder(members, input, lastMessage, allowSelfResponses, i
 
     // pick 1 at random if no one was activated
     let retries = 0;
-    // try to limit the selected random character to those with talkativeness > 0
-    const randomPool = chattyMembers.length > 0 ? chattyMembers : members;
+    const randomPool = (chattyMembers.length > 0 ? chattyMembers : eligibleMembers)
+        .filter(member => {
+            const settings = mentionSettings.get(member);
+            if (!settings) {
+                return true;
+            }
+            if (!settings.replyOnlyOnMention) {
+                return true;
+            }
+            return fallbackActive;
+        });
+
     while (activatedMembers.length === 0 && ++retries <= randomPool.length) {
         const randomIndex = Math.floor(Math.random() * randomPool.length);
-        const character = characters.find((x) => x.avatar === randomPool[randomIndex]);
+        const candidate = randomPool[randomIndex];
+        const character = characters.find(x => x.avatar === candidate);
 
-        if (!character) {
+        if (!character || character.name === bannedUser) {
             continue;
         }
 
-        activatedMembers.push(randomPool[randomIndex]);
+        activatedMembers.push(candidate);
     }
 
     // de-duplicate array of character avatars
@@ -1427,6 +1616,21 @@ async function onGroupAutoModeDelayInput(e) {
         _thisGroup.auto_mode_delay = Number(e.target.value);
         await editGroup(openGroupId, false, false);
         setAutoModeWorker();
+    }
+}
+
+async function onGroupSilenceFallbackInput(e) {
+    if (openGroupId) {
+        let value = Number(e.target.value);
+        if (!Number.isFinite(value)) {
+            value = DEFAULT_SILENCE_FALLBACK_SECONDS;
+        }
+        value = Math.max(0, Math.min(3600, Math.round(value)));
+        e.target.value = value;
+
+        let _thisGroup = groups.find((x) => x.id == openGroupId);
+        _thisGroup.silence_fallback_seconds = value;
+        await editGroup(openGroupId, false, false);
     }
 }
 
@@ -1738,6 +1942,13 @@ function select_group_chats(groupId, skipAnimation) {
     $('#rm_group_spectator_mode').prop('checked', group?.spectator_mode ?? false);
     $('#rm_group_hidemutedsprites').prop('checked', group && group.hideMutedSprites);
     $('#rm_group_automode_delay').val(group?.auto_mode_delay ?? DEFAULT_AUTO_MODE_DELAY);
+    const silenceFallback = typeof group?.silence_fallback_seconds !== 'undefined'
+        ? group.silence_fallback_seconds
+        : DEFAULT_SILENCE_FALLBACK_SECONDS;
+    if (group && typeof group.silence_fallback_seconds === 'undefined') {
+        group.silence_fallback_seconds = silenceFallback;
+    }
+    $('#rm_group_silence_fallback').val(silenceFallback);
 
     $('#rm_group_generation_mode_join_prefix').val(group?.generation_mode_join_prefix ?? '').attr('setting', 'generation_mode_join_prefix');
     $('#rm_group_generation_mode_join_suffix').val(group?.generation_mode_join_suffix ?? '').attr('setting', 'generation_mode_join_suffix');
@@ -1984,6 +2195,12 @@ async function createGroup() {
     let activationStrategy = Number($('#rm_group_activation_strategy').find(':selected').val()) ?? group_activation_strategy.NATURAL;
     let generationMode = Number($('#rm_group_generation_mode').find(':selected').val()) ?? group_generation_mode.SWAP;
     let autoModeDelay = Number($('#rm_group_automode_delay').val()) ?? DEFAULT_AUTO_MODE_DELAY;
+    let silenceFallback = Number($('#rm_group_silence_fallback').val());
+    if (!Number.isFinite(silenceFallback)) {
+        silenceFallback = DEFAULT_SILENCE_FALLBACK_SECONDS;
+    }
+    silenceFallback = Math.max(0, Math.min(3600, Math.round(silenceFallback)));
+    $('#rm_group_silence_fallback').val(silenceFallback);
     const members = newGroupMembers;
     const memberNames = characters.filter(x => members.includes(x.avatar)).map(x => x.name).join(', ');
 
@@ -2013,6 +2230,7 @@ async function createGroup() {
             chat_id: chatName,
             chats: chats,
             auto_mode_delay: autoModeDelay,
+            silence_fallback_seconds: silenceFallback,
             context_prompt: '',
             spectator_mode: spectatorMode,
         }),
@@ -2352,6 +2570,7 @@ jQuery(() => {
     $('#rm_group_activation_strategy').on('change', onGroupActivationStrategyInput);
     $('#rm_group_generation_mode').on('change', onGroupGenerationModeInput);
     $('#rm_group_automode_delay').on('input', onGroupAutoModeDelayInput);
+    $('#rm_group_silence_fallback').on('input', onGroupSilenceFallbackInput);
     $('#rm_group_generation_mode_join_prefix').on('input', onGroupGenerationModeTemplateInput);
     $('#rm_group_generation_mode_join_suffix').on('input', onGroupGenerationModeTemplateInput);
     $('#group_avatar_button').on('input', uploadGroupAvatar);

@@ -490,6 +490,7 @@ export function getCurrentChatId() {
 }
 
 export const talkativeness_default = 0.5;
+export const group_reply_mention_window_default = 3;
 export const depth_prompt_depth_default = 4;
 export const depth_prompt_role_default = 'system';
 const per_page_default = 50;
@@ -527,6 +528,9 @@ export let create_save = {
     mes_example: '',
     world: '',
     talkativeness: talkativeness_default,
+    group_reply_only_mentions: false,
+    group_mention_aliases: '',
+    group_mention_window: group_reply_mention_window_default,
     alternate_greetings: [],
     depth_prompt_prompt: '',
     depth_prompt_depth: depth_prompt_depth_default,
@@ -7525,6 +7529,19 @@ export function select_selected_character(chid, { switchMenu = true } = {}) {
     $('#depth_prompt_depth').val(characters[chid].data?.extensions?.depth_prompt?.depth ?? depth_prompt_depth_default);
     $('#depth_prompt_role').val(characters[chid].data?.extensions?.depth_prompt?.role ?? depth_prompt_role_default);
     $('#talkativeness_slider').val(characters[chid].talkativeness || talkativeness_default);
+    const groupChatSettings = characters[chid].group_chat ?? {};
+    const mentionAliases = Array.isArray(groupChatSettings.mention_aliases)
+        ? groupChatSettings.mention_aliases
+        : typeof groupChatSettings.mention_aliases === 'string'
+            ? groupChatSettings.mention_aliases.split(',').map(x => x.trim()).filter(x => x)
+            : [];
+    $('#group_reply_only_mentions').prop('checked', !!groupChatSettings.reply_only_on_mention);
+    $('#group_mention_aliases').val(mentionAliases.join(', '));
+    $('#group_mention_window').val(
+        Number.isFinite(Number(groupChatSettings.mention_window))
+            ? Number(groupChatSettings.mention_window)
+            : group_reply_mention_window_default,
+    );
     $('#mes_example_textarea').val(characters[chid].mes_example);
     $('#selected_chat_pole').val(characters[chid].chat);
     $('#create_date_pole').val(characters[chid].create_date);
@@ -7600,6 +7617,13 @@ function select_rm_create({ switchMenu = true } = {}) {
     $('#personality_textarea').val(create_save.personality);
     $('#firstmessage_textarea').val(create_save.first_message);
     $('#talkativeness_slider').val(create_save.talkativeness);
+    $('#group_reply_only_mentions').prop('checked', !!create_save.group_reply_only_mentions);
+    $('#group_mention_aliases').val(create_save.group_mention_aliases ?? '');
+    $('#group_mention_window').val(
+        Number.isFinite(Number(create_save.group_mention_window))
+            ? Number(create_save.group_mention_window)
+            : group_reply_mention_window_default,
+    );
     $('#scenario_pole').val(create_save.scenario);
     $('#depth_prompt_prompt').val(create_save.depth_prompt_prompt);
     $('#depth_prompt_depth').val(create_save.depth_prompt_depth);
@@ -8322,6 +8346,8 @@ async function createOrEditCharacter(e) {
                 { id: '#personality_textarea', callback: value => create_save.personality = value },
                 { id: '#firstmessage_textarea', callback: value => create_save.first_message = value },
                 { id: '#talkativeness_slider', callback: value => create_save.talkativeness = value, defaultValue: talkativeness_default },
+                { id: '#group_mention_aliases', callback: value => create_save.group_mention_aliases = value, defaultValue: '' },
+                { id: '#group_mention_window', callback: value => create_save.group_mention_window = Number(value), defaultValue: group_reply_mention_window_default },
                 { id: '#scenario_pole', callback: value => create_save.scenario = value },
                 { id: '#depth_prompt_prompt', callback: value => create_save.depth_prompt_prompt = value },
                 { id: '#depth_prompt_depth', callback: value => create_save.depth_prompt_depth = value, defaultValue: depth_prompt_depth_default },
@@ -8338,6 +8364,12 @@ async function createOrEditCharacter(e) {
                 $(field.id).val(fieldValue);
                 field.callback && field.callback(fieldValue);
             });
+            $('#group_reply_only_mentions').prop('checked', false);
+            create_save.group_reply_only_mentions = false;
+            $('#group_mention_aliases').val('');
+            create_save.group_mention_aliases = '';
+            $('#group_mention_window').val(group_reply_mention_window_default);
+            create_save.group_mention_window = group_reply_mention_window_default;
 
             if (Array.isArray(create_save.extra_books) && create_save.extra_books.length > 0) {
                 const fileName = getCharaFilename(null, { manualAvatarKey: avatarId });
@@ -9728,6 +9760,9 @@ jQuery(async function () {
         '#mes_example_textarea': function () { create_save.mes_example = String($('#mes_example_textarea').val()); },
         '#firstmessage_textarea': function () { create_save.first_message = String($('#firstmessage_textarea').val()); },
         '#talkativeness_slider': function () { create_save.talkativeness = Number($('#talkativeness_slider').val()); },
+        '#group_reply_only_mentions': function () { create_save.group_reply_only_mentions = !!$('#group_reply_only_mentions').prop('checked'); },
+        '#group_mention_aliases': function () { create_save.group_mention_aliases = String($('#group_mention_aliases').val()); },
+        '#group_mention_window': function () { create_save.group_mention_window = Number($('#group_mention_window').val()); },
         '#depth_prompt_prompt': function () { create_save.depth_prompt_prompt = String($('#depth_prompt_prompt').val()); },
         '#depth_prompt_depth': function () { create_save.depth_prompt_depth = Number($('#depth_prompt_depth').val()); },
         '#depth_prompt_role': function () { create_save.depth_prompt_role = String($('#depth_prompt_role').val()); },

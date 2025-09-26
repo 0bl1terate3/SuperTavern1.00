@@ -60,6 +60,12 @@ router.post('/create', (request, response) => {
     }
 
     const id = String(Date.now());
+    const autoModeDelay = Number(request.body.auto_mode_delay ?? 5);
+    const sanitizedAutoModeDelay = Number.isFinite(autoModeDelay) ? Math.max(1, Math.min(999, Math.round(autoModeDelay))) : 5;
+    const fallbackSecondsRaw = Number(request.body.silence_fallback_seconds ?? 45);
+    const silenceFallbackSeconds = Number.isFinite(fallbackSecondsRaw)
+        ? Math.max(0, Math.min(3600, Math.round(fallbackSecondsRaw)))
+        : 45;
     const groupMetadata = {
         id: id,
         name: request.body.name ?? 'New Group',
@@ -73,7 +79,8 @@ router.post('/create', (request, response) => {
         fav: request.body.fav,
         chat_id: request.body.chat_id ?? id,
         chats: request.body.chats ?? [id],
-        auto_mode_delay: request.body.auto_mode_delay ?? 5,
+        auto_mode_delay: sanitizedAutoModeDelay,
+        silence_fallback_seconds: silenceFallbackSeconds,
         generation_mode_join_prefix: request.body.generation_mode_join_prefix ?? '',
         generation_mode_join_suffix: request.body.generation_mode_join_suffix ?? '',
         context_prompt: request.body.context_prompt ?? '',

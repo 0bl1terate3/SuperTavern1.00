@@ -34,6 +34,45 @@ const isAndroid = process.platform === 'android';
 const useShallowCharacters = !!getConfigValue('performance.lazyLoadCharacters', false, 'boolean');
 const useDiskCache = !!getConfigValue('performance.useDiskCache', true, 'boolean');
 
+const GROUP_MENTION_WINDOW_DEFAULT = 3;
+const GROUP_MENTION_WINDOW_MIN = 0;
+const GROUP_MENTION_WINDOW_MAX = 25;
+
+function parseBooleanFlag(value) {
+    if (typeof value === 'boolean') {
+        return value;
+    }
+    if (typeof value === 'string') {
+        const normalized = value.trim().toLowerCase();
+        return ['true', '1', 'yes', 'on'].includes(normalized);
+    }
+    if (typeof value === 'number') {
+        return value === 1;
+    }
+    return false;
+}
+
+function parseMentionAliases(value) {
+    if (Array.isArray(value)) {
+        return value.map(item => String(item ?? '').trim()).filter(Boolean);
+    }
+    if (typeof value === 'string') {
+        return value
+            .split(/[\n,]/g)
+            .map(item => item.trim())
+            .filter(Boolean);
+    }
+    return [];
+}
+
+function sanitizeMentionWindow(value) {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) {
+        return GROUP_MENTION_WINDOW_DEFAULT;
+    }
+    return Math.min(GROUP_MENTION_WINDOW_MAX, Math.max(GROUP_MENTION_WINDOW_MIN, Math.round(numeric)));
+}
+
 class DiskCache {
     /**
      * @type {string}
@@ -549,6 +588,13 @@ function readFromV2(char) {
 
     char['chat'] = char['chat'] ?? humanizedISO8601DateTime();
 
+    const groupChatExtensions = _.get(char, 'data.extensions.group_chat', {});
+    _.set(char, 'group_chat', {
+        reply_only_on_mention: parseBooleanFlag(groupChatExtensions?.reply_only_on_mention),
+        mention_window: sanitizeMentionWindow(groupChatExtensions?.mention_window),
+        mention_aliases: parseMentionAliases(groupChatExtensions?.mention_aliases),
+    });
+
     return char;
 }
 
@@ -608,6 +654,12 @@ function charaFormatData(data, directories) {
     _.set(char, 'data.extensions.talkativeness', data.talkativeness || 0.5);
     _.set(char, 'data.extensions.fav', data.fav == 'true');
     _.set(char, 'data.extensions.world', data.world || '');
+    const replyOnlyOnMention = parseBooleanFlag(data.group_reply_only_mentions);
+    const mentionWindow = sanitizeMentionWindow(data.group_mention_window);
+    const mentionAliases = parseMentionAliases(data.group_mention_aliases);
+    _.set(char, 'data.extensions.group_chat.reply_only_on_mention', replyOnlyOnMention);
+    _.set(char, 'data.extensions.group_chat.mention_window', mentionWindow);
+    _.set(char, 'data.extensions.group_chat.mention_aliases', mentionAliases);
 
     // Spec extension: depth prompt
     const depth_default = 4;
@@ -620,6 +672,12 @@ function charaFormatData(data, directories) {
     //_.set(char, 'data.extensions.create_date', humanizedISO8601DateTime());
     //_.set(char, 'data.extensions.avatar', 'none');
     //_.set(char, 'data.extensions.chat', data.ch_name + ' - ' + humanizedISO8601DateTime());
+
+    _.set(char, 'group_chat', {
+        reply_only_on_mention: replyOnlyOnMention,
+        mention_window: mentionWindow,
+        mention_aliases: mentionAliases,
+    });
 
     // V3 fields
     _.set(char, 'data.group_only_greetings', data.group_only_greetings ?? []);
