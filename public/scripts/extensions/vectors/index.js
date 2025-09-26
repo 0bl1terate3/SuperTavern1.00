@@ -1733,12 +1733,12 @@ jQuery(async () => {
         e.preventDefault();
         e.stopPropagation();
 
-        if (Object.hasOwn(SillyTavern, 'llm')) {
+        if (Object.hasOwn(SuperTavern, 'llm')) {
             toastr.info('WebLLM is already installed');
             return;
         }
 
-        openThirdPartyExtensionMenu('https://github.com/SillyTavern/Extension-WebLLM');
+        openThirdPartyExtensionMenu('https://github.com/SuperTavern/Extension-WebLLM');
     });
 
     $('#vectors_webllm_model').on('input', () => {

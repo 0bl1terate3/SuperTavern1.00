@@ -196,7 +196,7 @@ export class QuickReplyApi {
      * @param {string} [props.message] the message to be sent or slash command to be executed by the new quick reply
      * @param {string} [props.title] the title / tooltip to be shown on the quick reply button
      * @param {boolean} [props.isHidden] whether to hide or show the button
-     * @param {boolean} [props.executeOnStartup] whether to execute the quick reply when SillyTavern starts
+     * @param {boolean} [props.executeOnStartup] whether to execute the quick reply when SuperTavern starts
      * @param {boolean} [props.executeOnUser] whether to execute the quick reply after a user has sent a message
      * @param {boolean} [props.executeOnAi] whether to execute the quick reply after the AI has sent a message
      * @param {boolean} [props.executeOnChatChange] whether to execute the quick reply when a new chat is loaded
@@ -256,7 +256,7 @@ export class QuickReplyApi {
      * @param {string} [props.message] the message to be sent or slash command to be executed by the quick reply
      * @param {string} [props.title] the title / tooltip to be shown on the quick reply button
      * @param {boolean} [props.isHidden] whether to hide or show the button
-     * @param {boolean} [props.executeOnStartup] whether to execute the quick reply when SillyTavern starts
+     * @param {boolean} [props.executeOnStartup] whether to execute the quick reply when SuperTavern starts
      * @param {boolean} [props.executeOnUser] whether to execute the quick reply after a user has sent a message
      * @param {boolean} [props.executeOnAi] whether to execute the quick reply after the AI has sent a message
      * @param {boolean} [props.executeOnChatChange] whether to execute the quick reply when a new chat is loaded

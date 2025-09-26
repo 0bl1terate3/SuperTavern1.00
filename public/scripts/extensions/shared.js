@@ -275,14 +275,14 @@ export function isWebLlmSupported() {
         return false;
     }
 
-    if (!('llm' in SillyTavern)) {
+    if (!('llm' in SuperTavern)) {
         const warningKey = 'webllm_extension_warning_shown';
         if (!sessionStorage.getItem(warningKey)) {
             toastr.error('WebLLM extension is not installed. Click here to install it.', 'WebLLM', {
                 timeOut: 0,
                 extendedTimeOut: 0,
                 preventDuplicates: true,
-                onclick: () => openThirdPartyExtensionMenu('https://github.com/SillyTavern/Extension-WebLLM'),
+                onclick: () => openThirdPartyExtensionMenu('https://github.com/SuperTavern/Extension-WebLLM'),
             });
             sessionStorage.setItem(warningKey, '1');
         }
@@ -304,7 +304,7 @@ export async function generateWebLlmChatPrompt(messages, params = {}) {
     }
 
     console.debug('WebLLM chat completion request:', messages, params);
-    const engine = SillyTavern.llm;
+    const engine = SuperTavern.llm;
     const response = await engine.generateChatPrompt(messages, params);
     console.debug('WebLLM chat completion response:', response);
     return response;
@@ -322,7 +322,7 @@ export async function countWebLlmTokens(text) {
     }
 
     try {
-        const engine = SillyTavern.llm;
+        const engine = SuperTavern.llm;
         const response = await engine.countTokens(text);
         return response;
     } catch (error) {
@@ -340,7 +340,7 @@ export async function getWebLlmContextSize() {
         throw new Error('WebLLM extension is not installed.');
     }
 
-    const engine = SillyTavern.llm;
+    const engine = SuperTavern.llm;
     await engine.loadModel();
     const model = await engine.getCurrentModelInfo();
     return model?.context_size;
@@ -383,7 +383,7 @@ export class ConnectionManagerRequestService {
     static async sendRequest(profileId, prompt, maxTokens, custom = this.defaultSendRequestParams, overridePayload = {}) {
         const { stream, signal, extractData, includePreset, includeInstruct, instructSettings } = { ...this.defaultSendRequestParams, ...custom };
 
-        const context = SillyTavern.getContext();
+        const context = SuperTavern.getContext();
         if (context.extensionSettings.disabledExtensions.includes('connection-manager')) {
             throw new Error('Connection Manager is not available');
         }
@@ -448,7 +448,7 @@ export class ConnectionManagerRequestService {
      * @returns {import('./connection-manager/index.js').ConnectionProfile[]}
      */
     static getSupportedProfiles() {
-        const context = SillyTavern.getContext();
+        const context = SuperTavern.getContext();
         if (context.extensionSettings.disabledExtensions.includes('connection-manager')) {
             throw new Error('Connection Manager is not available');
         }
@@ -495,7 +495,7 @@ export class ConnectionManagerRequestService {
             throw new Error('Select a connection profile that has an API');
         }
 
-        const context = SillyTavern.getContext();
+        const context = SuperTavern.getContext();
         const selectedApiMap = context.CONNECT_API_MAP[profile.api];
         if (!selectedApiMap) {
             throw new Error(`Unknown API type ${profile.api}`);
@@ -524,7 +524,7 @@ export class ConnectionManagerRequestService {
         unUpdate = () => { },
         onDelete = () => { },
     ) {
-        const context = SillyTavern.getContext();
+        const context = SuperTavern.getContext();
         if (context.extensionSettings.disabledExtensions.includes('connection-manager')) {
             throw new Error('Connection Manager is not available');
         }

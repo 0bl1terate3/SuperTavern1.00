@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>SillyTavern</title>
+    <title>SuperTavern</title>
     <base href="/">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
@@ -5939,6 +5939,10 @@
                                                     <span data-i18n="Auto Mode">Auto Mode</span>
                                                     <input id="rm_group_automode_delay" class="text_pole textarea_compact widthUnset" type="number" min="1" max="999" step="1" value="5" title="Auto Mode delay" data-i18n="[title]Auto Mode delay" />
                                                 </label>
+                                                <label id="rm_group_silence_fallback_label" class="checkbox_label whitespacenowrap" title="Allow a fallback reply after prolonged silence (seconds)." data-i18n="[title]Allow a fallback reply after prolonged silence (seconds).">
+                                                    <span data-i18n="Silence fallback (s)">Silence fallback (s)</span>
+                                                    <input id="rm_group_silence_fallback" class="text_pole textarea_compact widthUnset" type="number" min="0" max="3600" step="1" value="45">
+                                                </label>
                                                 <label id="rm_group_hidemutedsprites_label" class="checkbox_label whitespacenowrap">
                                                     <input id="rm_group_hidemutedsprites" type="checkbox" />
                                                     <span data-i18n="Hide Muted Member Sprites">Hide Muted Member Sprites</span>
@@ -6267,6 +6271,22 @@
                     <span data-i18n="Shy">Shy</span>
                     <span data-i18n="Normal">Normal</span>
                     <span data-i18n="Chatty">Chatty</span>
+                </div>
+                <div id="group_reply_rules_div" class="flex-container flexFlowColumn flexGap5">
+                    <label class="checkbox_label">
+                        <input id="group_reply_only_mentions" name="group_reply_only_mentions" type="checkbox">
+                        <span data-i18n="Reply only when mentioned">Reply only when mentioned</span>
+                    </label>
+                    <label class="flexFlowColumn">
+                        <span data-i18n="Mention aliases">Mention aliases</span>
+                        <input id="group_mention_aliases" name="group_mention_aliases" class="text_pole textarea_compact" type="text" placeholder="Alias, Nickname" data-i18n="[placeholder]Alias, Nickname">
+                        <small class="opacity70" data-i18n="Comma separated list of names the character should answer to.">Comma separated list of names the character should answer to.</small>
+                    </label>
+                    <label class="flexFlowColumn" title="How many prior messages to scan for mentions." data-i18n="[title]How many prior messages to scan for mentions.">
+                        <span data-i18n="Mention lookback window">Mention lookback window</span>
+                        <input id="group_mention_window" name="group_mention_window" class="text_pole textarea_compact" type="number" min="0" max="25" step="1" value="3">
+                        <small class="opacity70" data-i18n="Number of previous messages checked for a mention (0 disables history).">Number of previous messages checked for a mention (0 disables history).</small>
+                    </label>
                 </div>
             </div>
             <hr>
@@ -7090,15 +7110,15 @@
 
         <div id="onboarding_template" class="template_element">
             <div class="onboarding">
-                <h3 data-i18n="Welcome to SillyTavern!">Welcome to SillyTavern!</h3>
+                <h3 data-i18n="Welcome to SuperTavern!">Welcome to SuperTavern!</h3>
                 <div id="onboarding-UI-language-block" class="flex-container alignItemsBaseline">
                     <span data-i18n="UI Language">Language:</span>
                     <select id="onboarding_ui_language_select" class="flex1 margin0">
                         <option value="en">English</option>
                     </select>
                 </div>
-                <b data-i18n="SillyTavern is aimed at advanced users.">
-                    SillyTavern is aimed at advanced users.
+                <b data-i18n="SuperTavern is aimed at advanced users.">
+                    SuperTavern is aimed at advanced users.
                 </b>
                 <ul class="justifyLeft marginTopBot5">
                     <li><span data-i18n="welcome_message_part_1">Read the</span> <a href="https://docs.sillytavern.app/" target="_blank" data-i18n="welcome_message_part_2">Official Documentation</a><span data-i18n="welcome_message_part_3">.</span></li>
@@ -7764,6 +7784,7 @@
     <script type="module" src="lib/eventemitter.js"></script>
     <script type="module" src="scripts/i18n.js"></script>
     <script type="module" src="script.js"></script>
+    <script type="module" src="scripts/supertavern-enhancements.js"></script>
     <script>
         window.addEventListener('load', (event) => {
             const documentHeight = () => {

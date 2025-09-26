@@ -1429,7 +1429,7 @@ async function preparePromptsForChatCompletion({ scenario, charPersonality, name
  * Take a configuration object and prepares messages for a chat with OpenAI's chat completion API.
  * Handles prompts, prepares chat history, manages token budget, and processes various user settings.
  *
- * @param {Object} content - System prompts provided by SillyTavern
+ * @param {Object} content - System prompts provided by SuperTavern
  * @param {string} content.name2 - The second name to be used in the messages.
  * @param {string} content.charDescription - Description of the character.
  * @param {string} content.charPersonality - Description of the character's personality.
@@ -2601,7 +2601,7 @@ function parseChatCompletionLogprobs(data) {
                 return null;
             }
             // OpenAI Text Completion API is treated as a chat completion source
-            // by SillyTavern, hence its presence in this function.
+            // by SuperTavern, hence its presence in this function.
             return textCompletionModels.includes(getChatCompletionModel())
                 ? parseOpenAITextLogprobs(data.choices[0]?.logprobs)
                 : parseOpenAIChatLogprobs(data.choices[0]?.logprobs);

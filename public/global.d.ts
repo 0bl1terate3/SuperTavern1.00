@@ -18,7 +18,7 @@ declare global {
     var ePub;
     var quickReplyApi: QuickReplyApi;
 
-    var SillyTavern: {
+    var SuperTavern: {
         getContext(): typeof getContext;
         llm: any;
         libs: typeof libs;

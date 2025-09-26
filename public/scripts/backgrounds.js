@@ -19,7 +19,7 @@ const PLACEHOLDER_IMAGE = `url('data:image/png;base64,${PNG_PIXEL}')`;
  * Storage for frontend-generated background thumbnails.
  * This is used to store thumbnails for backgrounds that cannot be generated on the server.
  */
-const THUMBNAIL_STORAGE = localforage.createInstance({ name: 'SillyTavern_Thumbnails' });
+const THUMBNAIL_STORAGE = localforage.createInstance({ name: 'SuperTavern_Thumbnails' });
 
 /**
  * Cache for thumbnail blob URLs.
@@ -612,7 +612,7 @@ async function convertFileIfVideo(formData) {
         toastr.warning(t`Click here to install the Video Background Loader extension`, t`Video background uploads require a downloadable add-on`, {
             timeOut: 0,
             extendedTimeOut: 0,
-            onclick: () => openThirdPartyExtensionMenu('https://github.com/SillyTavern/Extension-VideoBackgroundLoader'),
+            onclick: () => openThirdPartyExtensionMenu('https://github.com/SuperTavern/Extension-VideoBackgroundLoader'),
         });
         return;
     }
