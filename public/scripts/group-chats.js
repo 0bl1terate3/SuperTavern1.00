@@ -808,7 +808,7 @@ function getGroupAvatar(group) {
     return groupAvatar;
 }
 
-export function getGroupChatNames(groupId) {
+function getGroupChatNames(groupId) {
     const group = groups.find(x => x.id === groupId);
 
     if (!group) {
@@ -822,7 +822,7 @@ export function getGroupChatNames(groupId) {
     return names;
 }
 
-export function getGroupContextPrompt(groupId = selected_group) {
+function getGroupContextPrompt(groupId = selected_group) {
     const group = groups.find(x => x.id === groupId);
     if (!group) {
         return '';
