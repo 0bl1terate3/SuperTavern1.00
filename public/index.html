@@ -4850,398 +4850,132 @@
             <div id="supertavern-settings" class="drawer-content closedDrawer">
                 <div id="supertavern-settings-panel" class="supertavern-settings-panel flex-container flexFlowColumn wide100p flex1">
                     <div class="supertavern-settings-group">
-                        <h3>Real-Time Multi-User Chat Rooms</h3>
-                        <ul>
-                            <li>Allow multiple human users to join the same conversation simultaneously</li>
-                            <li>Real-time synchronization with conflict resolution for simultaneous messages</li>
-                            <li>User roles and permissions (moderator, participant, observer)</li>
-                            <li>Private side conversations within group chats</li>
-                            <li>Cross-talk functionality (user-to-user communication using "/" prefix)</li>
-                        </ul>
+                        <h3>Real-Time Collaboration</h3>
+                        <p class="supertavern-description">Coordinate live sessions with multi-user chat, moderation roles, and private threads.</p>
+                        <label class="supertavern-toggle">
+                            <input type="checkbox" data-supertavern-setting="multiUser.enabled">
+                            <span>Enable real-time multi-user chat rooms</span>
+                        </label>
+                        <div class="supertavern-subgroup" data-supertavern-requires="multiUser.enabled">
+                            <label class="supertavern-toggle">
+                                <input type="checkbox" data-supertavern-setting="multiUser.conflictResolution">
+                                <span>Real-time synchronization with conflict resolution</span>
+                            </label>
+                            <label class="supertavern-toggle">
+                                <input type="checkbox" data-supertavern-setting="multiUser.privateSideChats">
+                                <span>Allow private side conversations within group chats</span>
+                            </label>
+                            <label class="supertavern-toggle">
+                                <input type="checkbox" data-supertavern-setting="multiUser.crossTalk">
+                                <span>Cross-talk functionality using <code>/name</code> prefix</span>
+                            </label>
+                            <div class="supertavern-role-select">
+                                <label for="supertavern-role">Your role</label>
+                                <select id="supertavern-role" data-supertavern-setting="multiUser.role">
+                                    <option value="participant">Participant</option>
+                                    <option value="moderator">Moderator</option>
+                                    <option value="observer">Observer</option>
+                                </select>
+                            </div>
+                            <div class="supertavern-status">
+                                <span>Status:</span>
+                                <span id="supertavern-multiuser-status">Offline</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="supertavern-settings-group">
                         <h3>Shared Memory Systems</h3>
-                        <ul>
-                            <li>Persistent shared knowledge base across multiple users</li>
-                            <li>Project-specific shared memory that updates in real-time</li>
-                            <li>Privacy controls for what gets shared vs. kept private</li>
-                            <li>Collaborative world-building with version control</li>
-                        </ul>
+                        <p class="supertavern-description">Capture project knowledge as the conversation evolves and keep teams aligned.</p>
+                        <label class="supertavern-toggle">
+                            <input type="checkbox" data-supertavern-setting="sharedMemory.enabled">
+                            <span>Persistent shared knowledge base across users</span>
+                        </label>
+                        <div class="supertavern-subgroup" data-supertavern-requires="sharedMemory.enabled">
+                            <label class="supertavern-toggle">
+                                <input type="checkbox" data-supertavern-setting="sharedMemory.projectScoped">
+                                <span>Use project-specific shared memory</span>
+                            </label>
+                            <label class="supertavern-toggle">
+                                <input type="checkbox" data-supertavern-setting="sharedMemory.privacyControls">
+                                <span>Respect privacy controls before sharing</span>
+                            </label>
+                            <div class="supertavern-memory-toolbar">
+                                <button type="button" id="supertavern-shared-memory-export" class="menu_button">Export snapshot</button>
+                                <button type="button" id="supertavern-shared-memory-clear" class="menu_button">Clear project memory</button>
+                            </div>
+                            <div class="supertavern-shared-memory">
+                                <ul id="supertavern-shared-memory-list" aria-live="polite"></ul>
+                            </div>
+                        </div>
                     </div>
                     <div class="supertavern-settings-group">
-                        <h3>Team Workspaces</h3>
-                        <ul>
-                            <li>Role-based access control for different team functions</li>
-                            <li>Shared character libraries and prompt templates</li>
-                            <li>Team analytics and usage tracking</li>
-                            <li>Centralized billing and subscription management</li>
-                        </ul>
+                        <h3>Team Workspaces &amp; Analytics</h3>
+                        <p class="supertavern-description">Track participation and coordinate shared assets across collaborators.</p>
+                        <label class="supertavern-toggle">
+                            <input type="checkbox" data-supertavern-setting="team.analyticsEnabled">
+                            <span>Enable team analytics and usage tracking</span>
+                        </label>
+                        <div class="supertavern-subgroup" data-supertavern-requires="team.analyticsEnabled">
+                            <p class="supertavern-hint">Message volume is tallied in real-time for every participant.</p>
+                            <ul id="supertavern-team-analytics" class="supertavern-team-list" aria-live="polite"></ul>
+                        </div>
                     </div>
                     <div class="supertavern-settings-group">
-                        <h3>Gamification &amp; Achievement Systems</h3>
-                        <ul>
-                            <li>
-                                <strong>Experience Point System</strong>
-                                <ul>
-                                    <li>Earn XP for various activities (daily chat, trying new features, creative writing)</li>
-                                    <li>Level progression unlocks new customization options</li>
-                                    <li>Achievement badges for milestones (1000 messages, first group chat, etc.)</li>
-                                    <li>Seasonal challenges and events</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Interactive Storytelling Modes</strong>
-                                <ul>
-                                    <li>Choose-your-own-adventure style conversations</li>
-                                    <li>Branching narrative trees with save points</li>
-                                    <li>Story collaboration between multiple users</li>
-                                    <li>Interactive fiction creation tools</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Mini-Games Integration</strong>
-                                <ul>
-                                    <li>Built-in games like chess, dice rolling, trivia</li>
-                                    <li>AI-powered puzzle generation</li>
-                                    <li>Collaborative problem-solving challenges</li>
-                                    <li>RPG-style character stat systems</li>
-                                </ul>
-                            </li>
-                        </ul>
+                        <h3>Gamification &amp; Achievements</h3>
+                        <p class="supertavern-description">Reward healthy collaboration with XP, levels, and collectible badges.</p>
+                        <label class="supertavern-toggle">
+                            <input type="checkbox" data-supertavern-setting="gamification.enabled">
+                            <span>Enable experience tracking and badges</span>
+                        </label>
+                        <div class="supertavern-subgroup" data-supertavern-requires="gamification.enabled">
+                            <div class="supertavern-xp-meter">
+                                <span id="supertavern-xp-level">Level 1</span>
+                                <progress id="supertavern-xp-progress" max="100" value="0" aria-label="Experience progress"></progress>
+                                <span id="supertavern-xp-value" class="supertavern-xp-value">0 XP</span>
+                            </div>
+                            <div>
+                                <h4 class="supertavern-subheading">Achievements</h4>
+                                <ul id="supertavern-achievements" class="supertavern-achievement-list" aria-live="polite"></ul>
+                            </div>
+                        </div>
                     </div>
                     <div class="supertavern-settings-group">
-                        <h3>Enhanced Accessibility Features</h3>
-                        <ul>
-                            <li>
-                                <strong>Advanced Screen Reader Support</strong>
-                                <ul>
-                                    <li>Optimized ARIA labels and live regions</li>
-                                    <li>Customizable announcement preferences</li>
-                                    <li>Keyboard navigation shortcuts</li>
-                                    <li>High contrast and dyslexia-friendly themes</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Multi-Modal Accessibility</strong>
-                                <ul>
-                                    <li>Voice-first interaction modes</li>
-                                    <li>Gesture-based navigation for mobile</li>
-                                    <li>Customizable font sizes and spacing</li>
-                                    <li>Color-blind friendly interface options</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Neurodivergent-Friendly Features</strong>
-                                <ul>
-                                    <li>Reduced motion options</li>
-                                    <li>Focus management tools</li>
-                                    <li>Cognitive load reduction settings</li>
-                                    <li>Sensory-friendly color schemes</li>
-                                </ul>
-                            </li>
-                        </ul>
+                        <h3>Enhanced Accessibility</h3>
+                        <p class="supertavern-description">Adapt the interface for screen readers, sensory comfort, and focus management.</p>
+                        <label class="supertavern-toggle">
+                            <input type="checkbox" data-supertavern-setting="accessibility.highContrast">
+                            <span>Enable high-contrast theme adjustments</span>
+                        </label>
+                        <label class="supertavern-toggle">
+                            <input type="checkbox" data-supertavern-setting="accessibility.dyslexiaFriendly">
+                            <span>Dyslexia-friendly font and spacing</span>
+                        </label>
+                        <label class="supertavern-toggle">
+                            <input type="checkbox" data-supertavern-setting="accessibility.reducedMotion">
+                            <span>Reduced motion and animation</span>
+                        </label>
+                        <label class="supertavern-toggle">
+                            <input type="checkbox" data-supertavern-setting="accessibility.focusManagement">
+                            <span>Enable focus management tools</span>
+                        </label>
                     </div>
                     <div class="supertavern-settings-group">
-                        <h3>Advanced AI Integration</h3>
-                        <ul>
-                            <li>
-                                <strong>Multi-Model Ensemble Conversations</strong>
-                                <ul>
-                                    <li>Run multiple AI models simultaneously for consensus responses</li>
-                                    <li>Model voting systems for better accuracy</li>
-                                    <li>Specialized model routing based on query type</li>
-                                    <li>Cross-model knowledge verification</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Dynamic Model Switching</strong>
-                                <ul>
-                                    <li>Automatic model selection based on conversation context</li>
-                                    <li>Performance monitoring and adaptive switching</li>
-                                    <li>Cost optimization algorithms</li>
-                                    <li>Fallback model chains</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>AI Agent Orchestration</strong>
-                                <ul>
-                                    <li>Multiple specialized AI agents working together</li>
-                                    <li>Agent-to-agent communication within conversations</li>
-                                    <li>Task delegation between different AI capabilities</li>
-                                    <li>Workflow automation with AI agents</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="supertavern-settings-group">
-                        <h3>Creative &amp; Content Generation Tools</h3>
-                        <ul>
-                            <li>
-                                <strong>Collaborative Writing Suite</strong>
-                                <ul>
-                                    <li>Real-time collaborative document editing within chat</li>
-                                    <li>Version history and branching for creative projects</li>
-                                    <li>AI-assisted story planning and character development</li>
-                                    <li>Export to various formats (PDF, EPUB, etc.)</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Advanced Image Generation Integration</strong>
-                                <ul>
-                                    <li>Context-aware image generation from conversation</li>
-                                    <li>Character consistency across generated images</li>
-                                    <li>Style transfer and image editing tools</li>
-                                    <li>3D avatar generation and customization</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Multimedia Content Creation</strong>
-                                <ul>
-                                    <li>AI-powered voice cloning for characters</li>
-                                    <li>Background music generation based on mood</li>
-                                    <li>Sound effect libraries for immersive experiences</li>
-                                    <li>Video generation for character interactions</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="supertavern-settings-group">
-                        <h3>Advanced Memory &amp; Context Management</h3>
-                        <ul>
-                            <li>
-                                <strong>Semantic Memory Clustering</strong>
-                                <ul>
-                                    <li>Intelligent grouping of related memories</li>
-                                    <li>Context-aware memory retrieval</li>
-                                    <li>Memory importance scoring and pruning</li>
-                                    <li>Cross-character memory sharing</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Dynamic Context Windows</strong>
-                                <ul>
-                                    <li>Adaptive context size based on conversation importance</li>
-                                    <li>Smart token allocation for optimal performance</li>
-                                    <li>Context compression algorithms</li>
-                                    <li>Multi-layered memory hierarchies</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Persistent World States</strong>
-                                <ul>
-                                    <li>Maintain consistent world information across sessions</li>
-                                    <li>Time progression and event tracking</li>
-                                    <li>Character relationship dynamics</li>
-                                    <li>Environmental state persistence</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="supertavern-settings-group">
-                        <h3>Enhanced Customization &amp; Theming</h3>
-                        <ul>
-                            <li>
-                                <strong>Advanced Theme Engine</strong>
-                                <ul>
-                                    <li>Node-based theme editor</li>
-                                    <li>Dynamic themes that change based on conversation mood</li>
-                                    <li>Community theme marketplace</li>
-                                    <li>Import/export theme packages</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Procedural UI Generation</strong>
-                                <ul>
-                                    <li>AI-generated interface layouts</li>
-                                    <li>Adaptive UI based on usage patterns</li>
-                                    <li>Personalized dashboard creation</li>
-                                    <li>Context-sensitive control panels</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Advanced Character Customization</strong>
-                                <ul>
-                                    <li>3D character model integration</li>
-                                    <li>Facial expression animation</li>
-                                    <li>Voice synthesis training</li>
-                                    <li>Personality trait sliders with behavioral impact</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="supertavern-settings-group">
-                        <h3>Analytics &amp; Insights</h3>
-                        <ul>
-                            <li>
-                                <strong>Conversation Analytics Dashboard</strong>
-                                <ul>
-                                    <li>Word count and sentiment tracking</li>
-                                    <li>Character development progress</li>
-                                    <li>Relationship mapping between characters</li>
-                                    <li>Usage pattern analysis</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>AI Performance Metrics</strong>
-                                <ul>
-                                    <li>Response quality tracking</li>
-                                    <li>Model comparison analytics</li>
-                                    <li>Cost optimization insights</li>
-                                    <li>Performance benchmarking</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Personal Growth Tracking</strong>
-                                <ul>
-                                    <li>Writing skill progression</li>
-                                    <li>Creative milestone achievements</li>
-                                    <li>Learning progress in different topics</li>
-                                    <li>Social interaction improvements</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="supertavern-settings-group">
-                        <h3>Integration &amp; Automation</h3>
-                        <ul>
-                            <li>
-                                <strong>External Service Integration</strong>
-                                <ul>
-                                    <li>Calendar and scheduling connectivity</li>
-                                    <li>Note-taking app synchronization</li>
-                                    <li>Social media cross-posting</li>
-                                    <li>Email integration for conversation summaries</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Workflow Automation</strong>
-                                <ul>
-                                    <li>Custom STscript marketplace</li>
-                                    <li>Visual workflow builder</li>
-                                    <li>Trigger-based automation</li>
-                                    <li>Integration with productivity tools</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>API Ecosystem</strong>
-                                <ul>
-                                    <li>RESTful API for third-party integrations</li>
-                                    <li>Webhook support for external events</li>
-                                    <li>Plugin architecture for community extensions</li>
-                                    <li>GraphQL interface for advanced queries</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="supertavern-settings-group">
-                        <h3>Advanced Search &amp; Organization</h3>
-                        <ul>
-                            <li>
-                                <strong>Semantic Search Across All Conversations</strong>
-                                <ul>
-                                    <li>Natural language query for finding specific conversations</li>
-                                    <li>Cross-character search capabilities</li>
-                                    <li>Context-aware result ranking</li>
-                                    <li>Advanced filtering and sorting options</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Smart Organization Systems</strong>
-                                <ul>
-                                    <li>AI-powered conversation categorization</li>
-                                    <li>Automatic tagging based on content</li>
-                                    <li>Relationship mapping between characters and topics</li>
-                                    <li>Timeline view of conversation history</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Knowledge Graph Integration</strong>
-                                <ul>
-                                    <li>Visual representation of character relationships</li>
-                                    <li>Topic connection mapping</li>
-                                    <li>Interactive exploration of conversation networks</li>
-                                    <li>Export to graph analysis tools</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="supertavern-settings-group">
-                        <h3>Privacy &amp; Security Enhancements</h3>
-                        <ul>
-                            <li>
-                                <strong>Advanced Encryption</strong>
-                                <ul>
-                                    <li>End-to-end encryption for sensitive conversations</li>
-                                    <li>Local-only processing options</li>
-                                    <li>Selective cloud sync with encryption</li>
-                                    <li>Zero-knowledge architecture options</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Privacy Controls</strong>
-                                <ul>
-                                    <li>Granular data sharing permissions</li>
-                                    <li>Automatic PII detection and masking</li>
-                                    <li>Conversation anonymization tools</li>
-                                    <li>Data retention policy customization</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="supertavern-settings-group">
-                        <h3>Mobile &amp; Cross-Platform</h3>
-                        <ul>
-                            <li>
-                                <strong>Progressive Web App Enhancement</strong>
-                                <ul>
-                                    <li>Offline conversation capabilities</li>
-                                    <li>Push notification system</li>
-                                    <li>Mobile-optimized gesture controls</li>
-                                    <li>Responsive design improvements</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Cross-Device Synchronization</strong>
-                                <ul>
-                                    <li>Real-time sync across multiple devices</li>
-                                    <li>Device-specific customization preservation</li>
-                                    <li>Bandwidth optimization for mobile</li>
-                                    <li>Conflict resolution for simultaneous edits</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="supertavern-settings-group">
-                        <h3>Community &amp; Social Features</h3>
-                        <ul>
-                            <li>
-                                <strong>Character Sharing Marketplace</strong>
-                                <ul>
-                                    <li>Community-driven character library</li>
-                                    <li>Rating and review system for characters</li>
-                                    <li>Version control for shared characters</li>
-                                    <li>Monetization options for character creators</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Collaborative World Building</strong>
-                                <ul>
-                                    <li>Shared universe creation tools</li>
-                                    <li>Community-driven lore development</li>
-                                    <li>Voting systems for canonical events</li>
-                                    <li>Collaborative timeline management</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Social Discovery</strong>
-                                <ul>
-                                    <li>Find users with similar interests</li>
-                                    <li>Public conversation showcases</li>
-                                    <li>Community challenges and events</li>
-                                    <li>Mentorship matching system</li>
-                                </ul>
-                            </li>
-                        </ul>
+                        <h3>Advanced Customization</h3>
+                        <p class="supertavern-description">Drive dynamic themes and procedural layouts that respond to collaboration.</p>
+                        <label class="supertavern-toggle">
+                            <input type="checkbox" data-supertavern-setting="customization.dynamicThemes">
+                            <span>Dynamic theme reactions to conversation mood</span>
+                        </label>
+                        <div class="supertavern-roadmap">
+                            <p class="supertavern-hint">Need integrations, automation, or content tooling? Track ongoing roadmap items below.</p>
+                            <ul class="supertavern-roadmap-list">
+                                <li>Integration &amp; automation pipeline (webhooks, STscript marketplace)</li>
+                                <li>Advanced AI ensemble routing and agent orchestration</li>
+                                <li>Creative toolchain upgrades for multimedia collaboration</li>
+                                <li>Semantic search, knowledge graphs, and privacy enhancements</li>
+                                <li>Community marketplace, seasonal challenges, and mobile sync</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>

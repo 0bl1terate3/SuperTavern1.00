@@ -5212,39 +5212,213 @@ body:has(#character_popup.open) #top-settings-holder:has(.drawer-content.openDra
 .supertavern-settings-panel {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
 }
 
 .supertavern-settings-group {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 10px;
-    padding: 14px 18px;
-    backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    padding: 16px 20px;
+    backdrop-filter: blur(6px);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .supertavern-settings-group h3 {
-    margin: 0 0 8px;
-    font-size: 1.05rem;
+    margin: 0;
+    font-size: 1.08rem;
+    letter-spacing: 0.01em;
 }
 
-.supertavern-settings-group ul {
+.supertavern-description {
     margin: 0;
-    padding-left: 1.2rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.supertavern-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.supertavern-toggle input[type="checkbox"] {
+    accent-color: var(--SmartThemeAccentColor, #6ec6ff);
+}
+
+.supertavern-subgroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 8px;
+    border-left: 2px solid rgba(255, 255, 255, 0.08);
+}
+
+.supertavern-subgroup[hidden] {
+    display: none !important;
+}
+
+.supertavern-role-select {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.supertavern-role-select select {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 4px 8px;
+    color: inherit;
+}
+
+.supertavern-status {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.supertavern-memory-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.supertavern-shared-memory {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.supertavern-shared-memory ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.supertavern-shared-memory li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.9rem;
+}
+
+.supertavern-shared-memory time {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.supertavern-hint {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.supertavern-team-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.supertavern-team-list li {
+    display: flex;
+    justify-content: space-between;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 0.9rem;
+}
+
+.supertavern-xp-meter {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 8px;
+    align-items: center;
+}
+
+.supertavern-xp-meter progress {
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.supertavern-xp-meter progress::-webkit-progress-bar {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.supertavern-xp-meter progress::-webkit-progress-value {
+    background: linear-gradient(90deg, #5eb9ff, #ac6cff);
+}
+
+.supertavern-xp-meter progress::-moz-progress-bar {
+    background: linear-gradient(90deg, #5eb9ff, #ac6cff);
+}
+
+.supertavern-xp-value {
+    font-variant-numeric: tabular-nums;
+}
+
+.supertavern-subheading {
+    margin: 4px 0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.supertavern-achievement-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: grid;
     gap: 6px;
+}
+
+.supertavern-achievement-list li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+}
+
+.supertavern-roadmap {
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.supertavern-roadmap-list {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 4px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.supertavern-roadmap-list li {
     list-style: disc;
-}
-
-.supertavern-settings-group ul ul {
-    margin-top: 6px;
-    list-style: circle;
-}
-
-.supertavern-settings-group li > strong {
-    display: block;
-    margin-bottom: 4px;
-    font-size: 0.95rem;
 }
 
 #ui-settings-button .drawer-toggle,
@@ -5276,6 +5450,53 @@ body:has(#character_popup.open) #top-settings-holder:has(.drawer-content.openDra
     cursor: pointer;
     font-size: var(--topBarIconSize);
     padding: 1px 3px;
+}
+
+html.supertavern-high-contrast,
+html.supertavern-high-contrast body {
+    background-color: #050505 !important;
+    color: #f5f5f5 !important;
+}
+
+html.supertavern-high-contrast .mes_block {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.45) !important;
+}
+
+html.supertavern-high-contrast a {
+    color: #63d0ff;
+}
+
+html.supertavern-dyslexia body {
+    font-family: 'OpenDyslexic', 'Comic Neue', 'Verdana', sans-serif;
+    letter-spacing: 0.02em;
+    line-height: 1.6;
+}
+
+html.supertavern-dyslexia #chat .mes_block {
+    font-size: 1.02em;
+}
+
+html.supertavern-reduced-motion,
+html.supertavern-reduced-motion *,
+html.supertavern-reduced-motion *::before,
+html.supertavern-reduced-motion *::after {
+    animation-duration: 0s !important;
+    transition-duration: 0s !important;
+    scroll-behavior: auto !important;
+}
+
+body.supertavern-focus-tools :focus-visible {
+    outline: 2px solid var(--SmartThemeAccentColor, #6ec6ff);
+    outline-offset: 2px;
+}
+
+body.supertavern-dynamic-theme {
+    background-image:
+        radial-gradient(circle at 25% 10%, rgba(94, 185, 255, var(--supertavern-theme-alpha, 0.18)) 0%, transparent 60%),
+        radial-gradient(circle at 80% 90%, rgba(172, 108, 255, var(--supertavern-theme-alpha, 0.18)) 0%, transparent 65%);
+    background-attachment: fixed;
+    background-blend-mode: screen;
 }
 
 .drawer-icon.openIcon {
