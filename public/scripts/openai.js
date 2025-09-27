@@ -30,7 +30,7 @@ import {
     system_message_types,
     this_chid,
 } from '../script.js';
-import { getGroupNames, selected_group } from './group-chats.js';
+import { getGroupNames, getGroupContextPrompt, selected_group } from './group-chats.js';
 
 import {
     chatCompletionDefaultPrompts,
@@ -1275,6 +1275,7 @@ async function populateChatCompletion(prompts, chatCompletion, { bias, quietProm
 async function preparePromptsForChatCompletion({ scenario, charPersonality, name2, worldInfoBefore, worldInfoAfter, charDescription, quietPrompt, bias, extensionPrompts, systemPromptOverride, jailbreakPromptOverride, type }) {
     const scenarioText = scenario && oai_settings.scenario_format ? substituteParams(oai_settings.scenario_format) : (scenario || '');
     const charPersonalityText = charPersonality && oai_settings.personality_format ? substituteParams(oai_settings.personality_format) : (charPersonality || '');
+    const groupContextPrompt = selected_group ? substituteParams(getGroupContextPrompt()).trim() : '';
     const groupNudge = substituteParams(oai_settings.group_nudge_prompt);
     const impersonationPrompt = oai_settings.impersonation_prompt ? substituteParams(oai_settings.impersonation_prompt) : '';
 
@@ -1286,6 +1287,7 @@ async function preparePromptsForChatCompletion({ scenario, charPersonality, name
         { role: 'system', content: charDescription, identifier: 'charDescription' },
         { role: 'system', content: charPersonalityText, identifier: 'charPersonality' },
         { role: 'system', content: scenarioText, identifier: 'scenario' },
+        ...(groupContextPrompt ? [{ role: 'system', content: groupContextPrompt, identifier: 'groupContext' }] : []),
         // Unordered prompts without marker
         { role: 'system', content: impersonationPrompt, identifier: 'impersonate' },
         { role: 'system', content: quietPrompt, identifier: 'quietPrompt' },

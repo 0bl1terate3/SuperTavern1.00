@@ -81,6 +81,7 @@ import { printTagList, createTagMapFromList, applyTagsOnCharacterSelect, tag_map
 import { FILTER_TYPES, FilterHelper } from './filters.js';
 import { isExternalMediaAllowed } from './chats.js';
 import { POPUP_TYPE, Popup, callGenericPopup } from './popup.js';
+import { renderTemplateAsync } from './templates.js';
 import { t } from './i18n.js';
 import { accountStorage } from './util/AccountStorage.js';
 
@@ -101,6 +102,7 @@ export {
     resetSelectedGroup,
     select_group_chats,
     getGroupChatNames,
+    getGroupContextPrompt,
 };
 
 let is_group_generating = false; // Group generation flag
@@ -127,6 +129,9 @@ export const group_generation_mode = {
 };
 
 export const DEFAULT_AUTO_MODE_DELAY = 5;
+
+const NARRATOR_NAME_KEY = 'narrator_name';
+const NARRATOR_NAME_DEFAULT = 'System';
 
 export const groupCandidatesFilter = new FilterHelper(debounce(printGroupCandidates, debounce_timeout.quick));
 let autoModeWorker = null;
@@ -247,6 +252,13 @@ export async function getGroupChat(groupId, reload = false) {
     } else {
         freshChat = !metadata.tainted;
         if (group && Array.isArray(group.members) && freshChat) {
+            const contextMessage = createGroupContextMessage(group, metadata);
+            if (contextMessage) {
+                chat.push(contextMessage);
+                await eventSource.emit(event_types.MESSAGE_RECEIVED, (chat.length - 1), 'group_context');
+                addOneMessage(contextMessage);
+                await eventSource.emit(event_types.CHARACTER_MESSAGE_RENDERED, (chat.length - 1), 'group_context');
+            }
             for (let member of group.members) {
                 const character = characters.find(x => x.avatar === member || x.name === member);
                 if (!character) {
@@ -682,6 +694,10 @@ async function getGroups() {
             if (Array.isArray(group.chats) && group.chats.some(x => typeof x === 'number')) {
                 group.chats = group.chats.map(x => String(x));
             }
+            if (typeof group.context_prompt !== 'string') {
+                group.context_prompt = group.context_prompt ? String(group.context_prompt) : '';
+            }
+            group.spectator_mode = !!group.spectator_mode;
         }
     }
 }
@@ -806,9 +822,61 @@ function getGroupChatNames(groupId) {
     return names;
 }
 
+function getGroupContextPrompt(groupId = selected_group) {
+    const group = groups.find(x => x.id === groupId);
+    if (!group) {
+        return '';
+    }
+    return typeof group.context_prompt === 'string' ? group.context_prompt : '';
+}
+
+function getGroupMemberNamesForPrompt(group) {
+    if (!group || !Array.isArray(group.members)) {
+        return '';
+    }
+
+    return group.members
+        .map(member => characters.find(x => x.avatar === member || x.name === member)?.name)
+        .filter(Boolean)
+        .join(', ');
+}
+
+function createGroupContextMessage(group, metadata = {}) {
+    const rawPrompt = getGroupContextPrompt(group?.id);
+    const trimmedPrompt = rawPrompt?.trim();
+
+    if (!trimmedPrompt) {
+        return null;
+    }
+
+    const memberNames = getGroupMemberNamesForPrompt(group);
+    const substitutedPrompt = substituteParams(trimmedPrompt, undefined, undefined, undefined, memberNames);
+
+    if (!substitutedPrompt.trim()) {
+        return null;
+    }
+
+    const narratorName = metadata?.[NARRATOR_NAME_KEY] || chat_metadata?.[NARRATOR_NAME_KEY] || NARRATOR_NAME_DEFAULT;
+
+    return {
+        name: narratorName,
+        is_user: false,
+        is_system: true,
+        send_date: getMessageTimeStamp(),
+        force_avatar: system_avatar,
+        mes: substitutedPrompt,
+        extra: {
+            type: system_message_types.NARRATOR,
+            group_context: true,
+        },
+    };
+}
+
 async function generateGroupWrapper(by_auto_mode, type = null, params = {}) {
+    const { ignore_user_input: ignoreUserInputParam = false, preserve_draft: preserveDraft = false, ...generationParams } = params || {};
+
     function throwIfAborted() {
-        if (params.signal instanceof AbortSignal && params.signal.aborted) {
+        if (generationParams.signal instanceof AbortSignal && generationParams.signal.aborted) {
             throw new Error('AbortSignal was fired. Group generation stopped');
         }
     }
@@ -838,6 +906,9 @@ async function generateGroupWrapper(by_auto_mode, type = null, params = {}) {
         return Promise.resolve();
     }
 
+    const $sendTextarea = $('#send_textarea');
+    let draftToRestore = null;
+
     try {
         await unshallowGroupMembers(selected_group);
 
@@ -846,7 +917,19 @@ async function generateGroupWrapper(by_auto_mode, type = null, params = {}) {
         is_group_generating = true;
         setCharacterName('');
         setCharacterId(undefined);
-        const userInput = String($('#send_textarea').val());
+        let userInput = String($sendTextarea.val());
+
+        const spectatorMode = !!group.spectator_mode;
+        const ignoreUserInput = ignoreUserInputParam || spectatorMode;
+        const shouldRestoreDraft = ignoreUserInput && (spectatorMode || preserveDraft);
+
+        if (ignoreUserInput && userInput?.length) {
+            if (shouldRestoreDraft) {
+                draftToRestore = userInput;
+            }
+            $sendTextarea.val('')[0].dispatchEvent(new Event('input', { bubbles: true }));
+            userInput = '';
+        }
 
         // id of this specific batch for regeneration purposes
         group_generation_id = Date.now();
@@ -867,8 +950,8 @@ async function generateGroupWrapper(by_auto_mode, type = null, params = {}) {
         const enabledMembers = group.members.filter(x => !group.disabled_members.includes(x));
         let activatedMembers = [];
 
-        if (params && typeof params.force_chid == 'number') {
-            activatedMembers = [params.force_chid];
+        if (typeof generationParams.force_chid === 'number') {
+            activatedMembers = [generationParams.force_chid];
         } else if (type === 'quiet') {
             activatedMembers = activateSwipe(group.members, { allowSystem: true }).slice(0, 1);
 
@@ -901,13 +984,17 @@ async function generateGroupWrapper(by_auto_mode, type = null, params = {}) {
         }
 
         if (activatedMembers.length === 0) {
-            //toastr.warning('All group members are disabled. Enable at least one to get a reply.');
-
-            // Send user message as is
-            const bias = getBiasStrings(userInput, type);
-            await sendMessageAsUser(userInput, bias.messageBias);
-            await saveChatConditional();
-            $('#send_textarea').val('')[0].dispatchEvent(new Event('input', { bubbles: true }));
+            if (!ignoreUserInput && userInput?.length) {
+                const bias = getBiasStrings(userInput, type);
+                await sendMessageAsUser(userInput, bias.messageBias);
+                await saveChatConditional();
+                $sendTextarea.val('')[0].dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            if (draftToRestore !== null) {
+                $sendTextarea.val(draftToRestore)[0].dispatchEvent(new Event('input', { bubbles: true }));
+                draftToRestore = null;
+            }
+            return Promise.resolve();
         }
         groupChatQueueOrder = new Map();
 
@@ -930,12 +1017,12 @@ async function generateGroupWrapper(by_auto_mode, type = null, params = {}) {
 
             // Wait for generation to finish
             const generateType = ['swipe', 'impersonate', 'quiet', 'continue'].includes(type) ? type : 'normal';
-            textResult = await Generate(generateType, { automatic_trigger: by_auto_mode, ...(params || {}) });
+            textResult = await Generate(generateType, { automatic_trigger: by_auto_mode, ...generationParams });
             let messageChunk = textResult?.messageChunk;
 
             if (messageChunk) {
                 while (shouldAutoContinue(messageChunk, type === 'impersonate')) {
-                    textResult = await Generate('continue', { automatic_trigger: by_auto_mode, ...(params || {}) });
+                    textResult = await Generate('continue', { automatic_trigger: by_auto_mode, ...generationParams });
                     messageChunk = textResult?.messageChunk;
                 }
             }
@@ -945,6 +1032,10 @@ async function generateGroupWrapper(by_auto_mode, type = null, params = {}) {
             }
         }
     } finally {
+        if (draftToRestore !== null) {
+            $sendTextarea.val(draftToRestore)[0].dispatchEvent(new Event('input', { bubbles: true }));
+            draftToRestore = null;
+        }
         is_group_generating = false;
         setSendButtonState(false);
         setCharacterId(undefined);
@@ -1538,6 +1629,20 @@ async function onGroupSelfResponsesClick() {
     }
 }
 
+async function onGroupSpectatorModeClick() {
+    if (!openGroupId) {
+        return;
+    }
+
+    const group = groups.find((x) => x.id == openGroupId);
+    if (!group) {
+        return;
+    }
+
+    group.spectator_mode = !!$(this).prop('checked');
+    await editGroup(openGroupId, false, false);
+}
+
 async function onHideMutedSpritesClick(value) {
     if (openGroupId) {
         let _thisGroup = groups.find((x) => x.id == openGroupId);
@@ -1546,6 +1651,45 @@ async function onHideMutedSpritesClick(value) {
         await editGroup(openGroupId, false, false);
         await eventSource.emit(event_types.GROUP_UPDATED);
     }
+}
+
+async function openGroupContextPrompt() {
+    if (!openGroupId) {
+        toastr.warning(t`Currently no group selected.`);
+        return;
+    }
+
+    const group = groups.find((x) => x.id == openGroupId);
+    if (!group) {
+        return;
+    }
+
+    const template = $(await renderTemplateAsync('groupContextPrompt'));
+    const textarea = template.find('.group_context_textarea');
+    textarea.val(group.context_prompt ?? '');
+    textarea.on('input', async function () {
+        group.context_prompt = String($(this).val());
+        await editGroup(openGroupId, false, false);
+    });
+    template.find('.group_context_reset').on('click', () => {
+        textarea.val('').trigger('input');
+    });
+
+    await callGenericPopup(template, POPUP_TYPE.TEXT, '', { large: true });
+}
+
+async function triggerGroupChatter() {
+    if (!selected_group) {
+        toastr.warning(t`Currently no group selected.`);
+        return;
+    }
+
+    if (is_group_generating) {
+        toastr.warning(t`Wait until the group finishes speaking before starting another turn.`);
+        return;
+    }
+
+    await generateGroupWrapper(false, 'observer', { ignore_user_input: true, preserve_draft: true });
 }
 
 function toggleHiddenControls(group, generationMode = null) {
@@ -1591,6 +1735,7 @@ function select_group_chats(groupId, skipAnimation) {
     const groupHasMembers = !!$('#rm_group_members').children().length;
     $('#rm_group_submit').prop('disabled', !groupHasMembers);
     $('#rm_group_allow_self_responses').prop('checked', group && group.allow_self_responses);
+    $('#rm_group_spectator_mode').prop('checked', group?.spectator_mode ?? false);
     $('#rm_group_hidemutedsprites').prop('checked', group && group.hideMutedSprites);
     $('#rm_group_automode_delay').val(group?.auto_mode_delay ?? DEFAULT_AUTO_MODE_DELAY);
 
@@ -1603,6 +1748,8 @@ function select_group_chats(groupId, skipAnimation) {
         $('#rm_group_submit').hide();
         $('#rm_group_delete').show();
         $('#rm_group_scenario').show();
+        $('#rm_group_context').show();
+        $('#rm_group_chatter').show();
         $('#group-metadata-controls .chat_lorebook_button').removeClass('disabled').prop('disabled', false);
         $('#group_open_media_overrides').show();
         const isMediaAllowed = isExternalMediaAllowed();
@@ -1615,6 +1762,8 @@ function select_group_chats(groupId, skipAnimation) {
         }
         $('#rm_group_delete').hide();
         $('#rm_group_scenario').hide();
+        $('#rm_group_context').hide();
+        $('#rm_group_chatter').hide();
         $('#group-metadata-controls .chat_lorebook_button').addClass('disabled').prop('disabled', true);
         $('#group_open_media_overrides').hide();
     }
@@ -1831,6 +1980,7 @@ function filterGroupMembers() {
 async function createGroup() {
     let name = $('#rm_group_chat_name').val();
     let allowSelfResponses = !!$('#rm_group_allow_self_responses').prop('checked');
+    let spectatorMode = !!$('#rm_group_spectator_mode').prop('checked');
     let activationStrategy = Number($('#rm_group_activation_strategy').find(':selected').val()) ?? group_activation_strategy.NATURAL;
     let generationMode = Number($('#rm_group_generation_mode').find(':selected').val()) ?? group_generation_mode.SWAP;
     let autoModeDelay = Number($('#rm_group_automode_delay').val()) ?? DEFAULT_AUTO_MODE_DELAY;
@@ -1863,6 +2013,8 @@ async function createGroup() {
             chat_id: chatName,
             chats: chats,
             auto_mode_delay: autoModeDelay,
+            context_prompt: '',
+            spectator_mode: spectatorMode,
         }),
     });
 
@@ -2177,6 +2329,8 @@ jQuery(() => {
     $('#rm_group_filter').on('input', filterGroupMembers);
     $('#rm_group_submit').on('click', createGroup);
     $('#rm_group_scenario').on('click', setScenarioOverride);
+    $('#rm_group_context').on('click', openGroupContextPrompt);
+    $('#rm_group_chatter').on('click', triggerGroupChatter);
     $('#rm_group_automode').on('input', function () {
         const value = $(this).prop('checked');
         is_group_automode_enabled = value;
@@ -2194,6 +2348,7 @@ jQuery(() => {
     $('#rm_group_delete').off().on('click', onDeleteGroupClick);
     $('#group_favorite_button').on('click', onFavoriteGroupClick);
     $('#rm_group_allow_self_responses').on('input', onGroupSelfResponsesClick);
+    $('#rm_group_spectator_mode').on('input', onGroupSpectatorModeClick);
     $('#rm_group_activation_strategy').on('change', onGroupActivationStrategyInput);
     $('#rm_group_generation_mode').on('change', onGroupGenerationModeInput);
     $('#rm_group_automode_delay').on('input', onGroupAutoModeDelayInput);
