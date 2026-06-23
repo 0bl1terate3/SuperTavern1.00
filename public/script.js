@@ -268,6 +268,12 @@ import { applyBrowserFixes } from './scripts/browser-fixes.js';
 import { initServerHistory } from './scripts/server-history.js';
 import { initSettingsSearch } from './scripts/setting-search.js';
 import { initBulkEdit } from './scripts/bulk-edit.js';
+import {
+    configureSuperTavern,
+    initializeSuperTavernUI,
+    loadSuperTavernState,
+    getSuperTavernState,
+} from './scripts/supertavern-settings.js';
 import { getContext } from './scripts/st-context.js';
 import { extractReasoningFromData, extractReasoningSignatureFromData, initReasoning, parseReasoningInSwipes, PromptReasoning, ReasoningHandler, removeReasoningFromString, updateReasoningUI } from './scripts/reasoning.js';
 import { accountStorage } from './scripts/util/AccountStorage.js';
@@ -640,6 +646,35 @@ export let active_character = '';
 /** The tag of the active group. (Coincidentally also the id) */
 export let active_group = '';
 
+function getLocalSuperTavernIdentity() {
+    const avatarUrl = user_avatar ? getThumbnailUrl('persona', user_avatar) : '';
+    return {
+        name: name1,
+        avatar: avatarUrl,
+        handle: currentUser?.handle ?? '',
+    };
+}
+
+async function insertSuperTavernRemoteMessage(message, meta = {}) {
+    chat.push(message);
+    addOneMessage(message, { forceId: chat.length - 1 });
+    await eventSource.emit(event_types.MESSAGE_RECEIVED, chat.length - 1, meta.eventTag ?? 'supertavern_remote');
+    await saveChatConditional();
+}
+
+configureSuperTavern({
+    eventSource,
+    event_types,
+    getChat: () => chat,
+    insertRemoteMessage: insertSuperTavernRemoteMessage,
+    reloadCurrentChat,
+    getCurrentChatId,
+    getActiveGroup: () => active_group,
+    getActiveCharacter: () => active_character,
+    getLocalUserIdentity: getLocalSuperTavernIdentity,
+    saveSettingsDebounced,
+});
+
 export const entitiesFilter = new FilterHelper(printCharactersDebounced);
 
 export function getRequestHeaders({ omitContentType = false } = {}) {
@@ -772,6 +807,7 @@ async function firstLoadInit() {
     initServerHistory();
     initSettingsSearch();
     initBulkEdit();
+    initializeSuperTavernUI();
     initReasoning();
     initWelcomeScreen();
     await initScrapers();
@@ -7910,6 +7946,8 @@ export async function getSettings(initLoaderHandle = null) {
         // Apply theme toggles from power user settings
         applyPowerUserSettings();
 
+        await loadSuperTavernState(settings?.supertavern ?? {});
+
         // Load character tags
         loadTagsSettings(settings);
 
@@ -8024,6 +8062,7 @@ export async function saveSettings(loopCounter = 0) {
         horde_settings: horde_settings,
         power_user: power_user,
         extension_settings: extension_settings,
+        supertavern: getSuperTavernState(),
         tags: tags,
         tag_map: tag_map,
         nai_settings: nai_settings,
